@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emergency 911 Button Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .emergency-btn { 
+            background: #dc2626; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 8px; 
+            font-size: 18px; 
+            cursor: pointer; 
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+        .emergency-btn:hover { 
+            background: #b91c1c; 
+        }
+        .info { 
+            background: #e0f2fe; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            border-left: 4px solid #0288d1;
+        }
+        .device-info {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+        .test-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Emergency 911 Button Test</h1>
+        
+        <div class="info">
+            <strong>How it works:</strong>
+            <ul>
+                <li><strong>Mobile/iOS:</strong> Will prompt to call 911 directly</li>
+                <li><strong>Desktop/Web:</strong> Will redirect to <a href="https://www.911.gov/" target="_blank">911.gov</a></li>
+            </ul>
+        </div>
+
+        <button id="emergency911Btn" class="emergency-btn">
+            📞 Emergency: 911
+        </button>
+
+        <div class="info">
+            <strong>Device Detection:</strong>
+            <div id="deviceInfo" class="device-info">Loading...</div>
+            <button class="test-btn" onclick="testDeviceDetection()">Test Detection</button>
+            <button class="test-btn" onclick="showEmergencyContacts()">Show Contacts</button>
+        </div>
+
+        <div class="info">
+            <strong>Safety Features:</strong>
+            <ul>
+                <li>✅ Confirmation dialog before calling</li>
+                <li>✅ Clear emergency instructions</li>
+                <li>✅ Device-specific behavior</li>
+                <li>✅ Fallback to 911.gov for information</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <strong>Test on different devices:</strong>
+            <ul>
+                <li>📱 <strong>Mobile:</strong> Should show call confirmation</li>
+                <li>💻 <strong>Desktop:</strong> Should redirect to 911.gov</li>
+                <li>📧 <strong>Tablet:</strong> Behavior depends on detection</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Load emergency module -->
+    <script src="js/emergency.js"></script>
+
+    <script>
+        // Display device info on page load
+        window.addEventListener('load', function() {
+            updateDeviceInfo();
+        });
+
+        function updateDeviceInfo() {
+            if (window.emergencyActions) {
+                const detection = window.emergencyActions.testDeviceDetection();
+                document.getElementById('deviceInfo').innerHTML = `
+                    <strong>User Agent:</strong> ${detection.userAgent}<br>
+                    <strong>Mobile:</strong> ${detection.isMobile ? '✅ Yes' : '❌ No'}<br>
+                    <strong>iOS:</strong> ${detection.isIOS ? '✅ Yes' : '❌ No'}<br>
+                    <strong>Android:</strong> ${detection.isAndroid ? '✅ Yes' : '❌ No'}<br>
+                    <strong>Touch Support:</strong> ${detection.touchSupport ? '✅ Yes' : '❌ No'}<br>
+                    <strong>Screen:</strong> ${detection.screenSize.width}x${detection.screenSize.height}
+                `;
+            }
+        }
+
+        function testDeviceDetection() {
+            if (window.emergencyActions) {
+                window.emergencyActions.testDeviceDetection();
+                updateDeviceInfo();
+            }
+        }
+
+        function showEmergencyContacts() {
+            if (window.emergencyActions) {
+                window.emergencyActions.showEmergencyContacts();
+            }
+        }
+    </script>
+</body>
+</html>

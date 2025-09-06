@@ -1,0 +1,335 @@
+/* Houston Disaster Response - Custom Styles */
+
+:root {
+    --primary-blue: #1e3a8a;
+    --primary-red: #dc2626;
+    --primary-green: #16a34a;
+    --primary-orange: #ea580c;
+    --primary-purple: #7c3aed;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --border-color: #e5e7eb;
+}
+
+/* PWA Installation Prompt */
+.install-prompt {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    right: 20px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+/* Accessibility Features */
+.high-contrast {
+    filter: contrast(1.5);
+}
+
+.large-text {
+    font-size: 1.2em;
+}
+
+.screen-reader-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Loading States */
+.skeleton {
+    animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 80%);
+    }
+    100% {
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+/* Chat Styles */
+.chat-message {
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.chat-message.user {
+    text-align: right;
+}
+
+.chat-message.user p {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.chat-message.bot p {
+    background-color: #e0e7ff;
+    color: #1e3a8a;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Google Maps Controls */
+.gm-style {
+    font-family: inherit;
+}
+
+.gm-style-iw {
+    font-family: inherit;
+}
+
+.gm-style-iw-c {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.gm-style-iw-d {
+    overflow: hidden !important;
+}
+
+/* Custom map controls */
+.map-control-button {
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+    margin: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.map-control-button:hover {
+    background: #f0f9ff;
+}
+
+/* Disaster Cards Hover Effects */
+.disaster-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.disaster-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.disaster-card.active {
+    border: 2px solid #3b82f6;
+    background-color: #eff6ff;
+}
+
+/* Status Cards */
+.status-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: currentColor;
+    opacity: 0.5;
+}
+
+/* Emergency Alert Animation */
+#emergencyAlert {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Notification Badge */
+#notificationBadge {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Progress Bar Animation */
+#progressBar {
+    transition: width 0.5s ease-in-out;
+}
+
+/* Offline Mode Indicator */
+.offline-indicator {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fbbf24;
+    color: #78350f;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+}
+
+.offline-mode .offline-indicator {
+    display: block;
+}
+
+/* Print Styles */
+@media print {
+    nav, .bottom-nav, .quick-actions, #chatContainer {
+        display: none;
+    }
+    
+    .checklist-section {
+        page-break-inside: avoid;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .dark-mode {
+        background-color: #111827;
+        color: #f3f4f6;
+    }
+    
+    .dark-mode .bg-white {
+        background-color: #1f2937;
+    }
+    
+    .dark-mode .text-gray-800 {
+        color: #f3f4f6;
+    }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    main {
+        padding-bottom: 80px;
+    }
+    
+    .install-prompt {
+        bottom: 100px;
+    }
+    
+    #map {
+        height: 300px;
+    }
+}
+
+/* Language Direction Support */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .chat-message.user {
+    text-align: left;
+}
+
+[dir="rtl"] .chat-message.bot {
+    text-align: right;
+}
+
+/* Focus Styles for Accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Modal and Popup Z-Index Fix */
+.fixed {
+    z-index: 9999 !important;
+}
+
+/* Google Maps z-index management */
+.gm-style > div:first-child {
+    z-index: 1000 !important;
+}
+
+/* Ensure map doesn't interfere with modals */
+#map {
+    z-index: 1;
+    position: relative;
+}
+
+/* When modal is open, lower map z-index */
+body:has(.fixed) #map {
+    z-index: 0;
+}
+
+/* Low Bandwidth Mode */
+.low-bandwidth {
+    /* Disable animations and transitions */
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    /* Hide decorative images */
+    img:not(.essential) {
+        display: none;
+    }
+    
+    /* Simplify shadows */
+    .shadow-md, .shadow-lg {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+}

@@ -1,0 +1,340 @@
+// Chat Module for AI Assistant
+class ChatAssistant {
+    constructor() {
+        this.chatContainer = null;
+        this.chatInput = null;
+        this.chatSend = null;
+        this.conversationHistory = [];
+        this.isTyping = false;
+    }
+
+    initialize() {
+        this.chatContainer = document.getElementById('chatContainer');
+        this.chatInput = document.getElementById('chatInput');
+        this.chatSend = document.getElementById('chatSend');
+
+        if (!this.chatContainer || !this.chatInput || !this.chatSend) return;
+
+        // Event listeners
+        this.chatSend.addEventListener('click', () => this.sendMessage());
+        this.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+
+        // Quick question buttons
+        document.querySelectorAll('.quick-question').forEach(button => {
+            button.addEventListener('click', () => {
+                this.chatInput.value = button.textContent;
+                this.sendMessage();
+            });
+        });
+
+        // Load conversation history
+        this.loadHistory();
+    }
+
+    async sendMessage() {
+        const message = this.chatInput.value.trim();
+        if (!message || this.isTyping) return;
+
+        // Add user message to chat
+        this.addMessage(message, 'user');
+        this.chatInput.value = '';
+
+        // Show typing indicator
+        this.showTypingIndicator();
+
+        try {
+            // Get user profile for context
+            const profile = this.getUserProfile();
+            
+            // Send to API
+            const response = await apiService.sendChatMessage(message, {
+                profile: profile,
+                history: this.conversationHistory.slice(-5) // Last 5 messages for context
+            });
+
+            // Remove typing indicator
+            this.hideTypingIndicator();
+
+            // Add bot response
+            this.addMessage(response.message, 'bot');
+
+            // Update quick suggestions if provided
+            if (response.suggestions && response.suggestions.length > 0) {
+                this.updateQuickQuestions(response.suggestions);
+            }
+
+            // Check for actionable items
+            this.processActionableResponse(response);
+
+        } catch (error) {
+            console.error('Chat error:', error);
+            this.hideTypingIndicator();
+            this.addMessage('I apologize, but I encountered an error. Please try again or call 311 for immediate assistance.', 'bot');
+        }
+    }
+
+    addMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        
+        const messageContent = document.createElement('p');
+        messageContent.className = sender === 'user' 
+            ? 'bg-blue-500 text-white p-3 rounded-lg inline-block max-w-xs md:max-w-md'
+            : 'bg-blue-100 text-gray-800 p-3 rounded-lg inline-block max-w-xs md:max-w-md';
+        
+        // Parse message for special formatting
+        messageContent.innerHTML = this.formatMessage(message);
+        
+        messageDiv.appendChild(messageContent);
+        this.chatContainer.appendChild(messageDiv);
+        
+        // Scroll to bottom
+        this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+        
+        // Add to history
+        this.conversationHistory.push({ sender, message, timestamp: Date.now() });
+        this.saveHistory();
+    }
+
+    formatMessage(message) {
+        // Convert URLs to links
+        message = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="underline">$1</a>');
+        
+        // Convert phone numbers to tel links
+        message = message.replace(/(\d{3}-\d{3}-\d{4}|\d{3}-\d{4}|\d{1}-\d{3}-\d{3}-\d{4})/g, 
+            '<a href="tel:$1" class="underline">$1</a>');
+        
+        // Bold important keywords
+        const keywords = ['emergency', 'evacuate', 'warning', 'danger', 'immediately', 'urgent'];
+        keywords.forEach(keyword => {
+            const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+            message = message.replace(regex, '<strong>$&</strong>');
+        });
+        
+        // Convert line breaks
+        message = message.replace(/\n/g, '<br>');
+        
+        return message;
+    }
+
+    showTypingIndicator() {
+        this.isTyping = true;
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message bot typing-indicator';
+        typingDiv.id = 'typingIndicator';
+        
+        const typingContent = document.createElement('p');
+        typingContent.className = 'bg-gray-100 p-3 rounded-lg inline-block';
+        typingContent.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        
+        typingDiv.appendChild(typingContent);
+        this.chatContainer.appendChild(typingDiv);
+        this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        this.isTyping = false;
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    updateQuickQuestions(suggestions) {
+        const buttons = document.querySelectorAll('.quick-question');
+        suggestions.forEach((suggestion, index) => {
+            if (buttons[index]) {
+                buttons[index].textContent = suggestion;
+            }
+        });
+    }
+
+    processActionableResponse(response) {
+        // Check for specific actions in the response
+        if (response.action) {
+            switch (response.action) {
+                case 'show_map':
+                    this.showMapWithLocation(response.data);
+                    break;
+                case 'update_checklist':
+                    this.updateChecklist(response.data);
+                    break;
+                case 'show_alert':
+                    this.showAlert(response.data);
+                    break;
+                case 'call_emergency':
+                    this.promptEmergencyCall(response.data);
+                    break;
+            }
+        }
+    }
+
+    showMapWithLocation(data) {
+        // Switch to map view and center on location
+        if (window.disasterMap && data.coordinates) {
+            window.disasterMap.centerOnLocation(data.coordinates.lat, data.coordinates.lng);
+            if (data.marker) {
+                window.disasterMap.addCustomMarker(
+                    data.coordinates.lat,
+                    data.coordinates.lng,
+                    data.marker.title,
+                    data.marker.popup
+                );
+            }
+        }
+    }
+
+    updateChecklist(data) {
+        // Update the preparedness checklist
+        if (data.items) {
+            data.items.forEach(item => {
+                const checkbox = document.querySelector(`input[data-item="${item}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+    }
+
+    showAlert(data) {
+        const alertBanner = document.getElementById('emergencyAlert');
+        const alertMessage = document.getElementById('alertMessage');
+        if (alertBanner && alertMessage) {
+            alertMessage.textContent = data.message;
+            alertBanner.classList.remove('hidden');
+            
+            // Auto-hide after 10 seconds unless critical
+            if (!data.critical) {
+                setTimeout(() => {
+                    alertBanner.classList.add('hidden');
+                }, 10000);
+            }
+        }
+    }
+
+    promptEmergencyCall(data) {
+        if (confirm(`Call ${data.number} - ${data.service}?`)) {
+            window.location.href = `tel:${data.number}`;
+        }
+    }
+
+    getUserProfile() {
+        const profileData = localStorage.getItem(CONFIG.STORAGE_KEYS.USER_PROFILE);
+        return profileData ? JSON.parse(profileData) : null;
+    }
+
+    saveHistory() {
+        // Keep only last 50 messages
+        if (this.conversationHistory.length > 50) {
+            this.conversationHistory = this.conversationHistory.slice(-50);
+        }
+        
+        try {
+            sessionStorage.setItem('chat_history', JSON.stringify(this.conversationHistory));
+        } catch (error) {
+            console.error('Error saving chat history:', error);
+        }
+    }
+
+    loadHistory() {
+        try {
+            const saved = sessionStorage.getItem('chat_history');
+            if (saved) {
+                this.conversationHistory = JSON.parse(saved);
+                // Optionally restore last few messages to UI
+                const recent = this.conversationHistory.slice(-5);
+                recent.forEach(msg => {
+                    this.addMessageToUI(msg.message, msg.sender);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading chat history:', error);
+        }
+    }
+
+    addMessageToUI(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        
+        const messageContent = document.createElement('p');
+        messageContent.className = sender === 'user' 
+            ? 'bg-blue-500 text-white p-3 rounded-lg inline-block max-w-xs md:max-w-md'
+            : 'bg-blue-100 text-gray-800 p-3 rounded-lg inline-block max-w-xs md:max-w-md';
+        
+        messageContent.innerHTML = this.formatMessage(message);
+        messageDiv.appendChild(messageContent);
+        this.chatContainer.appendChild(messageDiv);
+    }
+
+    clearHistory() {
+        this.conversationHistory = [];
+        sessionStorage.removeItem('chat_history');
+        
+        // Clear UI except initial message
+        const messages = this.chatContainer.querySelectorAll('.chat-message');
+        messages.forEach((msg, index) => {
+            if (index > 0) msg.remove();
+        });
+    }
+
+    // Special disaster response methods
+    async getEvacuationGuidance() {
+        const profile = this.getUserProfile();
+        let guidance = "Based on your location:\n\n";
+        
+        if (profile?.neighborhood) {
+            const neighborhood = CONFIG.NEIGHBORHOODS[profile.neighborhood];
+            if (neighborhood) {
+                guidance += `• Your area (${profile.neighborhood}) has ${neighborhood.floodRisk} flood risk\n`;
+                if (neighborhood.evacuationZone !== 'None') {
+                    guidance += `• You are in Evacuation Zone ${neighborhood.evacuationZone}\n`;
+                    guidance += `• Monitor news for Zone ${neighborhood.evacuationZone} evacuation orders\n`;
+                }
+            }
+        }
+        
+        guidance += "\nGeneral evacuation guidelines:\n";
+        guidance += "• Zone A: Evacuate for all hurricanes\n";
+        guidance += "• Zone B: Evacuate for Category 3+ hurricanes\n";
+        guidance += "• Zone C: Evacuate for Category 4+ hurricanes\n";
+        guidance += "• Mobile homes: Always evacuate regardless of zone\n";
+        
+        return guidance;
+    }
+
+    async getPersonalizedChecklist() {
+        const profile = this.getUserProfile();
+        const checklist = [...CONFIG.DISASTERS.hurricane.checklist];
+        
+        if (profile) {
+            if (profile.elderly) {
+                checklist.push('Ensure medications are refilled for 30 days');
+                checklist.push('Register with State of Texas Emergency Assistance Registry (STEAR)');
+            }
+            if (profile.pets) {
+                checklist.push('Prepare pet carrier and supplies');
+                checklist.push('Update pet ID tags and microchip info');
+                checklist.push('Locate pet-friendly shelters or hotels');
+            }
+            if (profile.medical) {
+                checklist.push('Contact medical equipment provider about emergency plans');
+                checklist.push('Register with utility company for priority restoration');
+            }
+            if (profile.children) {
+                checklist.push('Pack comfort items and activities for children');
+                checklist.push('Explain emergency plan in age-appropriate way');
+            }
+        }
+        
+        return checklist;
+    }
+}
+
+// Initialize chat assistant
+window.chatAssistant = new ChatAssistant();

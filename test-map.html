@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps API Test</title>
+    <style>
+        #map { height: 400px; width: 100%; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .info { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Google Maps API Test</h1>
+    <div class="info">
+        <p><strong>API Key:</strong> <span id="api-key">Loading...</span></p>
+        <p><strong>Status:</strong> <span id="status">Initializing...</span></p>
+    </div>
+    <div id="map"></div>
+
+    <!-- Load environment config -->
+    <script src="js/env-config.js"></script>
+    <script src="js/env.js"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+        // Wait for environment to load
+        window.addEventListener('environmentLoaded', initTest);
+        
+        // Fallback in case event doesn't fire
+        setTimeout(initTest, 1000);
+
+        function initTest() {
+            const apiKey = CONFIG.GOOGLE_MAPS.API_KEY;
+            document.getElementById('api-key').textContent = apiKey ? apiKey.substring(0, 20) + '...' : 'Not found';
+            
+            if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY') {
+                document.getElementById('status').textContent = 'ERROR: Invalid API key';
+                document.getElementById('map').innerHTML = '<div style="padding: 20px; background: #ffebee; color: #c62828;">Invalid or missing Google Maps API key</div>';
+                return;
+            }
+
+            document.getElementById('status').textContent = 'Loading Google Maps...';
+            loadGoogleMaps();
+        }
+
+        function loadGoogleMaps() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS.API_KEY}&callback=initMap`;
+            script.onerror = function() {
+                document.getElementById('status').textContent = 'ERROR: Failed to load Google Maps API';
+                document.getElementById('map').innerHTML = '<div style="padding: 20px; background: #ffebee; color: #c62828;">Failed to load Google Maps API. Check your API key and internet connection.</div>';
+            };
+            document.head.appendChild(script);
+        }
+
+        function initMap() {
+            document.getElementById('status').textContent = 'SUCCESS: Google Maps loaded!';
+            
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 29.7604, lng: -95.3698 }, // Houston
+                zoom: 11
+            });
+
+            new google.maps.Marker({
+                position: { lat: 29.7604, lng: -95.3698 },
+                map: map,
+                title: 'Houston, TX'
+            });
+        }
+    </script>
+</body>
+</html>
