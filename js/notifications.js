@@ -350,11 +350,6 @@ class NotificationManager {
     }
 
     // Navigation methods for notification actions
-    showEvacuationInfo() {
-        if (window.disasterMap) {
-            window.disasterMap.toggleLayer('evacuation');
-        }
-    }
 
     showFloodMap() {
         if (window.disasterMap) {

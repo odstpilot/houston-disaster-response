@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Zones Test - Houston Disaster Response</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-4 text-gray-800">
+                <i class="fas fa-water text-blue-500 mr-2"></i>
+                Flood Zones Test - Houston Area
+            </h1>
+            
+            <!-- Status Display -->
+            <div id="status" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+                <p class="text-sm text-blue-700">Initializing map...</p>
+            </div>
+            
+            <!-- Map Container -->
+            <div id="map" class="mb-4"></div>
+            
+            <!-- Controls -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button id="toggleFloodZones" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400">
+                    <i class="fas fa-water mr-1"></i> Toggle Flood Zones
+                </button>
+                <button id="refreshFloodData" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh Data
+                </button>
+                <button id="clearCache" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                    <i class="fas fa-trash mr-1"></i> Clear Cache
+                </button>
+            </div>
+            
+            <!-- Info Panel -->
+            <div id="infoPanel" class="bg-gray-50 p-4 rounded">
+                <h3 class="font-semibold mb-2">Flood Zone Information</h3>
+                <div id="zoneInfo" class="text-sm text-gray-600">
+                    Click "Toggle Flood Zones" to load FEMA flood zone data for the Houston area.
+                    The system will try to fetch real-time data from FEMA's National Flood Hazard Layer.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Scripts -->
+    <script src="js/env-config.js"></script>
+    <script src="js/env.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/map.js"></script>
+    
+    <script>
+        let testMap;
+        let floodZonesVisible = false;
+        
+        // Initialize the test
+        async function initTest() {
+            try {
+                updateStatus('Initializing map...', 'blue');
+                
+                testMap = new DisasterMap();
+                await testMap.initialize();
+                
+                updateStatus('Map initialized successfully. Ready to test flood zones.', 'green');
+                
+                // Enable the toggle button
+                document.getElementById('toggleFloodZones').disabled = false;
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('Test initialization failed:', error);
+                updateStatus(`Initialization failed: ${error.message}`, 'red');
+            }
+        }
+        
+        function setupEventListeners() {
+            document.getElementById('toggleFloodZones').addEventListener('click', async () => {
+                try {
+                    updateStatus('Loading flood zones...', 'blue');
+                    
+                    const isVisible = testMap.toggleLayer('flood');
+                    floodZonesVisible = isVisible;
+                    
+                    if (isVisible) {
+                        updateStatus('Flood zones loaded and displayed successfully!', 'green');
+                        updateZoneInfo();
+                    } else {
+                        updateStatus('Flood zones hidden.', 'gray');
+                        document.getElementById('zoneInfo').innerHTML = 'Flood zones are currently hidden.';
+                    }
+                    
+                } catch (error) {
+                    console.error('Error toggling flood zones:', error);
+                    updateStatus(`Error loading flood zones: ${error.message}`, 'red');
+                }
+            });
+            
+            document.getElementById('refreshFloodData').addEventListener('click', async () => {
+                try {
+                    updateStatus('Refreshing flood zone data...', 'blue');
+                    
+                    // Clear existing flood zones
+                    if (testMap.overlays.flood) {
+                        testMap.overlays.flood.forEach(item => {
+                            if (item.polygon) {
+                                item.polygon.setMap(null);
+                            }
+                        });
+                        testMap.overlays.flood = null;
+                    }
+                    
+                    // Reload flood zones
+                    await testMap.loadFloodZones();
+                    
+                    if (floodZonesVisible) {
+                        testMap.toggleLayer('flood');
+                    }
+                    
+                    updateStatus('Flood zone data refreshed successfully!', 'green');
+                    
+                } catch (error) {
+                    console.error('Error refreshing flood data:', error);
+                    updateStatus(`Error refreshing data: ${error.message}`, 'red');
+                }
+            });
+            
+            document.getElementById('clearCache').addEventListener('click', () => {
+                if (testMap.floodDataCache) {
+                    testMap.floodDataCache.clear();
+                    testMap.lastFloodDataFetch = 0;
+                    updateStatus('Cache cleared successfully.', 'green');
+                }
+            });
+        }
+        
+        function updateStatus(message, color) {
+            const statusEl = document.getElementById('status');
+            const colorClasses = {
+                blue: 'bg-blue-50 border-blue-200 text-blue-700',
+                green: 'bg-green-50 border-green-200 text-green-700',
+                red: 'bg-red-50 border-red-200 text-red-700',
+                gray: 'bg-gray-50 border-gray-200 text-gray-700'
+            };
+            
+            statusEl.className = `mb-4 p-3 border rounded ${colorClasses[color] || colorClasses.gray}`;
+            statusEl.innerHTML = `<p class="text-sm">${message}</p>`;
+        }
+        
+        function updateZoneInfo() {
+            const floodZones = testMap.overlays.flood;
+            if (!floodZones || floodZones.length === 0) {
+                document.getElementById('zoneInfo').innerHTML = 'No flood zone data available.';
+                return;
+            }
+            
+            const zoneTypes = {};
+            floodZones.forEach(zone => {
+                const floodZone = zone.data.floodZone;
+                zoneTypes[floodZone] = (zoneTypes[floodZone] || 0) + 1;
+            });
+            
+            let infoHTML = `<p><strong>Loaded ${floodZones.length} flood zones:</strong></p><ul class="mt-2 space-y-1">`;
+            
+            Object.entries(zoneTypes).forEach(([zone, count]) => {
+                const riskLevel = testMap.getFloodRiskLevel(zone);
+                infoHTML += `<li class="flex items-center">
+                    <span class="font-mono text-xs bg-gray-200 px-2 py-1 rounded mr-2">${zone}</span>
+                    <span class="${riskLevel.color}">${riskLevel.text}</span>
+                    <span class="text-gray-500 ml-auto">(${count} zones)</span>
+                </li>`;
+            });
+            
+            infoHTML += '</ul>';
+            infoHTML += '<p class="mt-3 text-xs text-gray-600">Click on any flood zone on the map to see detailed information including insurance requirements.</p>';
+            
+            document.getElementById('zoneInfo').innerHTML = infoHTML;
+        }
+        
+        // Start the test when page loads
+        document.addEventListener('DOMContentLoaded', initTest);
+    </script>
+</body>
+</html>

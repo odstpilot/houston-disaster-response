@@ -419,11 +419,6 @@ class ProfileManager {
         }, 3000);
     }
 
-    showEvacuationRoutes() {
-        if (window.disasterMap) {
-            window.disasterMap.toggleLayer('evacuation');
-        }
-    }
 
     showPetShelters() {
         // Filter shelters that accept pets
