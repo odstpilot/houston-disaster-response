@@ -48,14 +48,25 @@ class ChatAssistant {
         this.showTypingIndicator();
 
         try {
-            // Get user profile for context
-            const profile = this.getUserProfile();
-            
-            // Send to API
-            const response = await apiService.sendChatMessage(message, {
-                profile: profile,
-                history: this.conversationHistory.slice(-5) // Last 5 messages for context
-            });
+            // Get user context for personalized responses
+            const context = {
+                userProfile: this.getUserProfile(),
+                history: this.conversationHistory.slice(-5), // Last 5 messages for context
+                currentLocation: 'Houston, TX'
+            };
+
+            // Use intelligent chat service if available
+            let response;
+            if (window.intelligentChatService) {
+                const responseText = await window.intelligentChatService.generateResponse(message, context);
+                response = { message: responseText };
+            } else {
+                // Fallback to API service
+                response = await apiService.sendChatMessage(message, {
+                    profile: context.userProfile,
+                    history: context.history
+                });
+            }
 
             // Remove typing indicator
             this.hideTypingIndicator();
@@ -69,7 +80,9 @@ class ChatAssistant {
             }
 
             // Check for actionable items
-            this.processActionableResponse(response);
+            if (response.actions) {
+                this.processActionableResponse(response);
+            }
 
         } catch (error) {
             console.error('Chat error:', error);
@@ -82,15 +95,31 @@ class ChatAssistant {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${sender}`;
         
-        const messageContent = document.createElement('p');
-        messageContent.className = sender === 'user' 
-            ? 'bg-blue-500 text-white p-3 rounded-lg inline-block max-w-xs md:max-w-md'
-            : 'bg-blue-100 text-gray-800 p-3 rounded-lg inline-block max-w-xs md:max-w-md';
+        // Create avatar
+        const avatar = document.createElement('div');
+        avatar.className = `chat-avatar ${sender}`;
+        if (sender === 'bot') {
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+        } else {
+            avatar.innerHTML = '<i class="fas fa-user"></i>';
+        }
+        
+        // Create message content
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
         
         // Parse message for special formatting
         messageContent.innerHTML = this.formatMessage(message);
         
-        messageDiv.appendChild(messageContent);
+        // Arrange elements based on sender
+        if (sender === 'user') {
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(avatar);
+        } else {
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+        }
+        
         this.chatContainer.appendChild(messageDiv);
         
         // Scroll to bottom
@@ -125,14 +154,20 @@ class ChatAssistant {
     showTypingIndicator() {
         this.isTyping = true;
         const typingDiv = document.createElement('div');
-        typingDiv.className = 'chat-message bot typing-indicator';
+        typingDiv.className = 'chat-typing-indicator';
         typingDiv.id = 'typingIndicator';
         
-        const typingContent = document.createElement('p');
-        typingContent.className = 'bg-gray-100 p-3 rounded-lg inline-block';
-        typingContent.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+        typingDiv.innerHTML = `
+            <div class="chat-avatar bot">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        `;
         
-        typingDiv.appendChild(typingContent);
         this.chatContainer.appendChild(typingDiv);
         this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
     }

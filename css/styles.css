@@ -349,6 +349,130 @@ body:has(.fixed) #map {
     z-index: 0;
 }
 
+/* Enhanced Chat Styles */
+.chat-message {
+    margin-bottom: 1rem;
+    animation: slideInChat 0.3s ease-out;
+}
+
+.chat-message.user {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.chat-message.bot {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.chat-message .message-content {
+    max-width: 75%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.chat-message.user .message-content {
+    background-color: #2563eb;
+    color: white;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.chat-message.bot .message-content {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.chat-typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: #f3f4f6;
+    border-radius: 1rem;
+    border-bottom-left-radius: 0.5rem;
+    max-width: 75%;
+    margin-bottom: 1rem;
+}
+
+.chat-typing-indicator .typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.chat-typing-indicator .typing-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #6b7280;
+    border-radius: 50%;
+    animation: typingPulse 1.4s infinite;
+}
+
+.chat-typing-indicator .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.chat-typing-indicator .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.chat-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.chat-avatar.bot {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.chat-avatar.user {
+    background-color: #6b7280;
+    color: white;
+}
+
+@keyframes slideInChat {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes typingPulse {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced Chat Input */
+#chatInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.quick-question:hover {
+    background-color: #e5e7eb;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
 /* Low Bandwidth Mode */
 .low-bandwidth {
     /* Disable animations and transitions */

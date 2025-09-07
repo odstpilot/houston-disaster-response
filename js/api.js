@@ -162,67 +162,22 @@ class APIService {
         ];
     }
 
-    // LLM Chat API (simulated)
+    // LLM Chat API - Redirects to intelligent chat service
     async sendChatMessage(message, context = {}) {
-        // Simulate LLM response based on keywords
-        const lowerMessage = message.toLowerCase();
-        
-        let response = "I'm here to help you with disaster preparedness and response. ";
-        
-        if (lowerMessage.includes('hurricane')) {
-            response += "For hurricane preparation in Houston: Start monitoring the storm 5 days out. "
-                + "Know your evacuation zone (check harriscountyfws.org). Stock up on supplies when the storm is 72 hours away. "
-                + "Fill your gas tank at 48 hours. Secure outdoor items at 24 hours. "
-                + "If you're in zones A or B, evacuate when ordered. Never stay in a mobile home during a hurricane.";
-        } else if (lowerMessage.includes('flood')) {
-            response += "Houston flooding tips: Never drive through flooded streets - just 6 inches can stall your car. "
-                + "Monitor bayou levels at harriscountyfws.org. Move vehicles to higher ground early. "
-                + "Know multiple evacuation routes. Turn Around Don't Drown! "
-                + "If water enters your home, turn off electricity at the breaker.";
-        } else if (lowerMessage.includes('emergency kit') || lowerMessage.includes('supplies')) {
-            response += "Essential emergency kit for Houston: Water (1 gallon/person/day for 7 days), "
-                + "non-perishable food for 7 days, medications, first aid kit, flashlights, "
-                + "battery-powered radio, phone chargers, cash, important documents in waterproof container, "
-                + "tools, duct tape, plastic sheeting, and supplies for pets.";
-        } else if (lowerMessage.includes('shelter')) {
-            response += "Houston opens emergency shelters during disasters. Main locations include "
-                + "George R. Brown Convention Center, NRG Center, and Toyota Center. "
-                + "Call 311 or check houstonemergency.org for current shelter locations. "
-                + "Bring medications, important documents, and supplies for 3 days.";
-        } else if (lowerMessage.includes('insurance') || lowerMessage.includes('fema')) {
-            response += "After a disaster: Document all damage with photos/video before cleaning. "
-                + "Contact your insurance company immediately. Register with FEMA at disasterassistance.gov "
-                + "or call 1-800-621-3362. Keep all receipts for emergency repairs and temporary housing. "
-                + "Note: Flood insurance has a 30-day waiting period - get it before hurricane season!";
-        } else {
-            response += "What specific disaster preparedness topic would you like to know about? "
-                + "I can help with hurricanes, flooding, extreme weather, emergency kits, evacuation planning, "
-                + "shelters, insurance claims, and recovery resources.";
+        // Use the intelligent chat service if available
+        if (window.intelligentChatService) {
+            const response = await window.intelligentChatService.generateResponse(message, context);
+            return {
+                message: response,
+                suggestions: []
+            };
         }
         
+        // Fallback if intelligent service unavailable
         return {
-            message: response,
-            suggestions: this.getSuggestions(lowerMessage)
+            message: "I'm temporarily unavailable. For emergency assistance, call 911. For non-emergency help, call 311.",
+            suggestions: []
         };
-    }
-
-    getSuggestions(message) {
-        const suggestions = [];
-        
-        if (!message.includes('kit')) {
-            suggestions.push('What should be in my emergency kit?');
-        }
-        if (!message.includes('evacuate')) {
-            suggestions.push('When should I evacuate?');
-        }
-        if (!message.includes('shelter')) {
-            suggestions.push('Where are the emergency shelters?');
-        }
-        if (!message.includes('insurance')) {
-            suggestions.push('How do I file an insurance claim?');
-        }
-        
-        return suggestions;
     }
 
     // Save data for offline use

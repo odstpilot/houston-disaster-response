@@ -169,10 +169,25 @@
                 </h2>
                 <div id="chatContainer" class="h-64 overflow-y-auto mb-4 p-4 bg-gray-50 rounded-lg">
                     <div class="chat-message bot">
-                        <p class="bg-blue-100 p-3 rounded-lg inline-block">
-                            Hello! I'm your Houston Disaster Response Assistant. I can help you prepare for disasters, 
-                            find resources, and guide you through recovery. What would you like to know?
-                        </p>
+                        <div class="flex items-start space-x-2">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-lg max-w-xs">
+                                <p class="text-sm">
+                                    Hello! I'm your AI-powered Houston Disaster Response Assistant. I have access to real-time information and can provide personalized guidance for disaster preparedness, evacuation planning, and emergency resources. 
+                                    <br><br>
+                                    <strong>I can help with:</strong><br>
+                                    • Current weather & flood conditions<br>
+                                    • Hurricane & storm preparation<br>
+                                    • Evacuation routes & shelters<br>
+                                    • Emergency supplies & checklists<br>
+                                    • Recovery resources<br>
+                                    <br>
+                                    What would you like to know?
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -183,13 +198,16 @@
                 </div>
                 <div class="mt-2 flex flex-wrap gap-2">
                     <button class="quick-question text-sm px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
-                        What should I do if a hurricane is coming?
+                        What's the current weather situation in Houston?
                     </button>
                     <button class="quick-question text-sm px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
-                        How do I prepare an emergency kit?
+                        How do I know my evacuation zone?
                     </button>
                     <button class="quick-question text-sm px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
-                        Where are the nearest shelters?
+                        What should I do if there's a flood warning?
+                    </button>
+                    <button class="quick-question text-sm px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
+                        Where can I find emergency shelters near me?
                     </button>
                 </div>
             </div>
@@ -452,6 +470,7 @@
     <script src="js/api.js"></script>
     <script src="js/disasters.js"></script>
     <script src="js/map.js"></script>
+    <script src="js/intelligent-chat.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/profile.js"></script>
     <script src="js/checklist.js"></script>
