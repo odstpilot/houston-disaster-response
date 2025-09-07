@@ -299,6 +299,40 @@ textarea:focus {
     z-index: 9999 !important;
 }
 
+/* Modal Layout Fixes */
+.fixed .bg-white {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.fixed .flex-1 {
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.fixed .flex-shrink-0 {
+    flex-shrink: 0;
+}
+
+/* Ensure modal buttons are always visible on mobile */
+@media (max-width: 768px) {
+    .fixed .bg-white {
+        max-height: 85vh;
+        margin: 1rem;
+    }
+    
+    .fixed .flex.gap-3 {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .fixed .flex.gap-3 button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 /* Google Maps z-index management */
 .gm-style > div:first-child {
     z-index: 1000 !important;

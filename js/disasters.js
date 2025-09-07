@@ -71,8 +71,8 @@ class DisasterManager {
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4';
         modal.style.zIndex = '9999';
         modal.innerHTML = `
-            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-                <div class="p-6 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
+                <div class="p-6 border-b bg-gradient-to-r from-blue-600 to-blue-800 text-white flex-shrink-0">
                     <div class="flex justify-between items-center">
                         <h2 class="text-2xl font-bold flex items-center">
                             <i class="fas ${disaster.icon} mr-3"></i>
@@ -81,32 +81,40 @@ class DisasterManager {
                         <button onclick="disasterManager.closeModal(this)" class="text-3xl">&times;</button>
                     </div>
                 </div>
-                <div class="overflow-y-auto max-h-[70vh] p-6">
+                <div class="overflow-y-auto flex-1 p-6 min-h-0">
                     ${this.generateDisasterContent(disasterType)}
                 </div>
-                <div class="p-4 border-t bg-gray-50">
-                    <div class="flex gap-3">
+                <div class="p-4 border-t bg-gray-50 flex-shrink-0">
+                    <div class="flex gap-3 flex-wrap">
                         <button onclick="disasterManager.startPreparation('${disasterType}')" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex-shrink-0">
                             <i class="fas fa-clipboard-check mr-2"></i>
                             Start Preparation Checklist
                         </button>
                         <button onclick="disasterManager.showResources('${disasterType}')" 
-                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex-shrink-0">
                             <i class="fas fa-book mr-2"></i>
                             View Resources
                         </button>
+                        ${this.hasDrill(disasterType) ? `
                         <button onclick="disasterManager.simulateDrill('${disasterType}')" 
-                                class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">
+                                class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 flex-shrink-0">
                             <i class="fas fa-running mr-2"></i>
                             Practice Drill
                         </button>
+                        ` : ''}
                     </div>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
+    }
+
+    hasDrill(disasterType) {
+        // Only these disasters have actual drill implementations
+        const drillsAvailable = ['hurricane', 'flood', 'tornado'];
+        return drillsAvailable.includes(disasterType);
     }
 
     closeModal(button) {
@@ -617,21 +625,27 @@ class DisasterManager {
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
         modal.innerHTML = `
-            <div class="bg-white rounded-lg max-w-md w-full p-6">
-                <h3 class="text-xl font-bold mb-4">Resources for ${CONFIG.DISASTERS[disasterType].name}</h3>
-                <div class="space-y-2">
-                    ${links.map(link => `
-                        <a href="${link.url}" target="_blank" 
-                           class="block p-3 bg-blue-50 rounded hover:bg-blue-100 transition">
-                            <span class="text-blue-600 underline">${link.name}</span>
-                            <i class="fas fa-external-link-alt ml-2 text-sm"></i>
-                        </a>
-                    `).join('')}
+            <div class="bg-white rounded-lg max-w-md w-full max-h-[90vh] flex flex-col">
+                <div class="p-6 flex-shrink-0">
+                    <h3 class="text-xl font-bold">Resources for ${CONFIG.DISASTERS[disasterType].name}</h3>
                 </div>
-                <button onclick="disasterManager.closeModal(this)" 
-                        class="mt-4 w-full py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
-                    Close
-                </button>
+                <div class="flex-1 px-6 overflow-y-auto min-h-0">
+                    <div class="space-y-2">
+                        ${links.map(link => `
+                            <a href="${link.url}" target="_blank" 
+                               class="block p-3 bg-blue-50 rounded hover:bg-blue-100 transition">
+                                <span class="text-blue-600 underline">${link.name}</span>
+                                <i class="fas fa-external-link-alt ml-2 text-sm"></i>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="p-6 flex-shrink-0 border-t">
+                    <button onclick="disasterManager.closeModal(this)" 
+                            class="w-full py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                        Close
+                    </button>
+                </div>
             </div>
         `;
         document.body.appendChild(modal);
@@ -751,19 +765,23 @@ class DisasterManager {
         const modal = document.createElement('div');
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
         modal.innerHTML = `
-            <div class="bg-white rounded-lg max-w-2xl w-full p-6">
-                <h2 class="text-2xl font-bold mb-4">${drill.title}</h2>
-                <div id="drillContent">
+            <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+                <div class="p-6 flex-shrink-0">
+                    <h2 class="text-2xl font-bold">${drill.title}</h2>
+                </div>
+                <div id="drillContent" class="flex-1 px-6 overflow-y-auto min-h-0">
                     <!-- Content will be updated dynamically -->
                 </div>
-                <div class="mt-6 flex gap-3">
-                    <button id="drillNext" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Start Drill
-                    </button>
-                    <button onclick="disasterManager.closeModal(this)" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
-                        Cancel
-                    </button>
+                <div class="p-6 flex-shrink-0 border-t">
+                    <div class="flex gap-3">
+                        <button id="drillNext" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Start Drill
+                        </button>
+                        <button onclick="disasterManager.closeModal(this)" 
+                                class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                            Cancel
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
