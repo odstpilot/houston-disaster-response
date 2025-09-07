@@ -3,6 +3,112 @@ class DisasterManager {
     constructor() {
         this.currentDisaster = null;
         this.activeWarnings = [];
+        this.disasterChecklists = {
+            hurricane: {
+                title: "Hurricane Preparedness Checklist",
+                items: [
+                    { id: 'hurricane_1', text: 'Create evacuation plan with multiple routes', priority: 'high' },
+                    { id: 'hurricane_2', text: 'Stock 7-10 days of water (1 gallon per person per day)', priority: 'high' },
+                    { id: 'hurricane_3', text: 'Stock 7-10 days of non-perishable food', priority: 'high' },
+                    { id: 'hurricane_4', text: 'Secure outdoor furniture and decorations', priority: 'high' },
+                    { id: 'hurricane_5', text: 'Install storm shutters or board up windows', priority: 'high' },
+                    { id: 'hurricane_6', text: 'Fill bathtubs and extra containers with water', priority: 'medium' },
+                    { id: 'hurricane_7', text: 'Charge all electronic devices and have portable chargers', priority: 'medium' },
+                    { id: 'hurricane_8', text: 'Fuel up vehicles and generators', priority: 'medium' },
+                    { id: 'hurricane_9', text: 'Withdraw cash from ATM', priority: 'medium' },
+                    { id: 'hurricane_10', text: 'Review insurance policies and take photos of property', priority: 'low' },
+                    { id: 'hurricane_11', text: 'Create digital copies of important documents', priority: 'low' },
+                    { id: 'hurricane_12', text: 'Stock prescription medications for 2+ weeks', priority: 'high' },
+                    { id: 'hurricane_13', text: 'Prepare emergency kit with flashlights, batteries, radio', priority: 'medium' },
+                    { id: 'hurricane_14', text: 'Know location of nearest shelter or safe room', priority: 'high' }
+                ]
+            },
+            flood: {
+                title: "Flood Preparedness Checklist",
+                items: [
+                    { id: 'flood_1', text: 'Know your evacuation zone and routes', priority: 'high' },
+                    { id: 'flood_2', text: 'Move important items to higher ground', priority: 'high' },
+                    { id: 'flood_3', text: 'Stock emergency supplies for 72+ hours', priority: 'high' },
+                    { id: 'flood_4', text: 'Prepare sandbags if in flood-prone area', priority: 'medium' },
+                    { id: 'flood_5', text: 'Clear storm drains and gutters around property', priority: 'medium' },
+                    { id: 'flood_6', text: 'Turn off utilities if instructed by authorities', priority: 'high' },
+                    { id: 'flood_7', text: 'Have flotation devices readily available', priority: 'medium' },
+                    { id: 'flood_8', text: 'Never drive through flooded roads (Turn Around, Don\'t Drown)', priority: 'high' },
+                    { id: 'flood_9', text: 'Monitor NOAA Weather Radio for updates', priority: 'medium' },
+                    { id: 'flood_10', text: 'Protect important documents in waterproof containers', priority: 'low' },
+                    { id: 'flood_11', text: 'Have emergency contact list readily available', priority: 'medium' },
+                    { id: 'flood_12', text: 'Know how to shut off gas, water, and electricity', priority: 'high' }
+                ]
+            },
+            tornado: {
+                title: "Tornado Preparedness Checklist",
+                items: [
+                    { id: 'tornado_1', text: 'Identify safe room or interior space on lowest floor', priority: 'high' },
+                    { id: 'tornado_2', text: 'Practice tornado drill with family', priority: 'high' },
+                    { id: 'tornado_3', text: 'Have NOAA Weather Radio with battery backup', priority: 'high' },
+                    { id: 'tornado_4', text: 'Keep emergency kit in safe room', priority: 'medium' },
+                    { id: 'tornado_5', text: 'Remove potential projectiles from yard', priority: 'medium' },
+                    { id: 'tornado_6', text: 'Install SafeRoom or storm shelter if possible', priority: 'low' },
+                    { id: 'tornado_7', text: 'Wear sturdy shoes during tornado season', priority: 'low' },
+                    { id: 'tornado_8', text: 'Keep helmet or hard hat in safe room', priority: 'medium' },
+                    { id: 'tornado_9', text: 'Monitor weather conditions during severe weather season', priority: 'medium' },
+                    { id: 'tornado_10', text: 'Know the difference between tornado watch and warning', priority: 'high' },
+                    { id: 'tornado_11', text: 'Have multiple ways to receive weather alerts', priority: 'high' },
+                    { id: 'tornado_12', text: 'Plan for mobile home residents to seek sturdier shelter', priority: 'high' }
+                ]
+            },
+            heat: {
+                title: "Extreme Heat Preparedness Checklist",
+                items: [
+                    { id: 'heat_1', text: 'Stay hydrated - drink water before you feel thirsty', priority: 'high' },
+                    { id: 'heat_2', text: 'Limit outdoor activities during peak heat (10am-6pm)', priority: 'high' },
+                    { id: 'heat_3', text: 'Wear lightweight, light-colored, loose-fitting clothing', priority: 'medium' },
+                    { id: 'heat_4', text: 'Use air conditioning or visit cooling centers', priority: 'high' },
+                    { id: 'heat_5', text: 'Never leave people or pets in parked vehicles', priority: 'high' },
+                    { id: 'heat_6', text: 'Check on elderly neighbors and relatives frequently', priority: 'medium' },
+                    { id: 'heat_7', text: 'Know signs of heat exhaustion and heat stroke', priority: 'high' },
+                    { id: 'heat_8', text: 'Take cool showers or baths to lower body temperature', priority: 'medium' },
+                    { id: 'heat_9', text: 'Use fans to circulate air (if temperature below 95°F)', priority: 'medium' },
+                    { id: 'heat_10', text: 'Avoid alcoholic beverages and caffeine', priority: 'medium' },
+                    { id: 'heat_11', text: 'Apply sunscreen SPF 30+ if going outdoors', priority: 'medium' },
+                    { id: 'heat_12', text: 'Have backup power plan for medical devices requiring electricity', priority: 'low' }
+                ]
+            },
+            freeze: {
+                title: "Winter Weather Preparedness Checklist",
+                items: [
+                    { id: 'freeze_1', text: 'Protect pipes by insulating or letting faucets drip', priority: 'high' },
+                    { id: 'freeze_2', text: 'Have alternate heating source that doesn\'t require electricity', priority: 'high' },
+                    { id: 'freeze_3', text: 'Stock food and water for 3-7 days', priority: 'high' },
+                    { id: 'freeze_4', text: 'Bring pets indoors or provide adequate shelter', priority: 'high' },
+                    { id: 'freeze_5', text: 'Dress in layers and have warm blankets available', priority: 'medium' },
+                    { id: 'freeze_6', text: 'Know how to shut off water in case pipes burst', priority: 'high' },
+                    { id: 'freeze_7', text: 'Have flashlights and batteries ready for power outages', priority: 'medium' },
+                    { id: 'freeze_8', text: 'Avoid travel unless absolutely necessary', priority: 'medium' },
+                    { id: 'freeze_9', text: 'Service heating equipment before winter season', priority: 'low' },
+                    { id: 'freeze_10', text: 'Install weather stripping and storm windows', priority: 'low' },
+                    { id: 'freeze_11', text: 'Protect outdoor plants and cover faucets', priority: 'medium' },
+                    { id: 'freeze_12', text: 'Keep extra prescription medications on hand', priority: 'medium' }
+                ]
+            },
+            chemical: {
+                title: "Chemical Emergency Preparedness Checklist",
+                items: [
+                    { id: 'chemical_1', text: 'Know location of chemical facilities in your area', priority: 'medium' },
+                    { id: 'chemical_2', text: 'Understand shelter-in-place procedures', priority: 'high' },
+                    { id: 'chemical_3', text: 'Have emergency kit with plastic sheeting and duct tape', priority: 'high' },
+                    { id: 'chemical_4', text: 'Know how to shut off air conditioning and heating systems', priority: 'high' },
+                    { id: 'chemical_5', text: 'Listen to emergency broadcast information', priority: 'high' },
+                    { id: 'chemical_6', text: 'Stay indoors and close all windows and doors', priority: 'high' },
+                    { id: 'chemical_7', text: 'Move to interior room above ground level', priority: 'medium' },
+                    { id: 'chemical_8', text: 'Have battery-powered radio for emergency information', priority: 'medium' },
+                    { id: 'chemical_9', text: 'Avoid going outside until authorities say it\'s safe', priority: 'high' },
+                    { id: 'chemical_10', text: 'Remove contaminated clothing if exposed', priority: 'high' },
+                    { id: 'chemical_11', text: 'Know evacuation routes from your area', priority: 'medium' },
+                    { id: 'chemical_12', text: 'Keep emergency contact numbers easily accessible', priority: 'medium' }
+                ]
+            }
+        };
     }
 
     initialize() {
@@ -568,6 +674,16 @@ class DisasterManager {
     startPreparation(disasterType) {
         // Close modal
         document.querySelector('.fixed').remove();
+        
+        // Get disaster-specific checklist
+        const disasterChecklist = this.disasterChecklists[disasterType];
+        
+        if (disasterChecklist) {
+            // Load the disaster-specific checklist into the checklist manager
+            if (window.checklistManager) {
+                window.checklistManager.loadDisasterChecklist(disasterChecklist);
+            }
+        }
         
         // Switch to checklist view with disaster-specific items
         const checklistView = document.getElementById('checklistView');

@@ -457,6 +457,83 @@ class ChecklistManager {
         
         return seasonalItems;
     }
+
+    loadDisasterChecklist(disasterChecklist) {
+        // Clear existing checklist data for fresh start
+        this.checklistData = {};
+        
+        // Update the checklist view with disaster-specific items
+        const checklistContainer = document.querySelector('#checklistView .space-y-6');
+        if (!checklistContainer) return;
+        
+        // Find the checklist items container
+        const checklistItemsContainer = checklistContainer.querySelector('.space-y-3');
+        if (!checklistItemsContainer) return;
+        
+        // Clear existing items
+        checklistItemsContainer.innerHTML = '';
+        
+        // Add title
+        const titleElement = document.querySelector('#checklistView h2');
+        if (titleElement) {
+            titleElement.textContent = disasterChecklist.title;
+        }
+        
+        // Group items by priority
+        const priorityGroups = {
+            high: disasterChecklist.items.filter(item => item.priority === 'high'),
+            medium: disasterChecklist.items.filter(item => item.priority === 'medium'),
+            low: disasterChecklist.items.filter(item => item.priority === 'low')
+        };
+        
+        // Add priority sections
+        Object.entries(priorityGroups).forEach(([priority, items]) => {
+            if (items.length > 0) {
+                // Priority header
+                const priorityHeader = document.createElement('div');
+                priorityHeader.className = 'mt-6 mb-3';
+                priorityHeader.innerHTML = `
+                    <h3 class="text-lg font-semibold text-gray-800 capitalize border-b border-gray-200 pb-2">
+                        ${priority} Priority
+                        <span class="text-sm font-normal text-gray-500">(${items.length} items)</span>
+                    </h3>
+                `;
+                checklistItemsContainer.appendChild(priorityHeader);
+                
+                // Add items for this priority
+                items.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors';
+                    
+                    const priorityColor = priority === 'high' ? 'red' : priority === 'medium' ? 'yellow' : 'blue';
+                    
+                    itemElement.innerHTML = `
+                        <input type="checkbox" 
+                               id="${item.id}" 
+                               class="checklist-item mt-1 h-4 w-4 text-${priorityColor}-600 focus:ring-${priorityColor}-500 border-gray-300 rounded">
+                        <label for="${item.id}" class="text-gray-700 cursor-pointer flex-1">
+                            ${item.text}
+                        </label>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                   bg-${priorityColor}-100 text-${priorityColor}-800">
+                            ${priority}
+                        </span>
+                    `;
+                    
+                    checklistItemsContainer.appendChild(itemElement);
+                });
+            }
+        });
+        
+        // Re-initialize event listeners for new checklist items
+        this.setupEventListeners();
+        
+        // Update progress
+        this.updateProgress();
+        
+        // Save the initial state
+        this.saveChecklist();
+    }
 }
 
 // Initialize checklist manager
