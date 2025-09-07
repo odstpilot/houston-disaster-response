@@ -351,11 +351,6 @@ class NotificationManager {
 
     // Navigation methods for notification actions
 
-    showFloodMap() {
-        if (window.disasterMap) {
-            window.disasterMap.toggleLayer('flood');
-        }
-    }
 
     showShelters() {
         if (window.disasterMap) {

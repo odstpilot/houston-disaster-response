@@ -4,7 +4,6 @@ class DisasterMap {
         this.map = null;
         this.markers = [];
         this.overlays = {
-            flood: null,
             shelters: null,
             medical: null
         };
@@ -13,9 +12,6 @@ class DisasterMap {
         this.directionsService = null;
         this.directionsRenderer = null;
         this.isLoaded = false;
-        this.floodDataCache = new Map(); // Cache for flood zone data
-        this.lastFloodDataFetch = 0;
-        this.FLOOD_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
     }
 
     async initialize() {
@@ -187,148 +183,14 @@ class DisasterMap {
 
     async loadAllLayers() {
         await Promise.all([
-            this.loadFloodZones(),
             this.loadShelters(),
             this.loadMedicalCenters()
         ]);
     }
 
-    async loadFloodZones() {
-        try {
-            // Load FEMA flood zones from multiple sources
-            const floodZones = await this.fetchFEMAFloodZones();
-            
-            if (!floodZones || floodZones.length === 0) {
-                console.warn('No FEMA flood zone data available, using fallback data');
-                // Fallback to static data if FEMA API is unavailable
-                return this.loadFallbackFloodZones();
-            }
 
-            const floodPolygons = floodZones.map(zone => {
-                const color = this.getFloodZoneColor(zone.floodZone);
-                
-                const polygon = new google.maps.Polygon({
-                    paths: zone.coordinates,
-                    strokeColor: color.stroke,
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: color.fill,
-                    fillOpacity: 0.35,
-                    map: null, // Initially hidden
-                    zIndex: this.getFloodZoneZIndex(zone.floodZone)
-                });
 
-                polygon.addListener('click', (event) => {
-                    this.showFloodZoneInfo(zone, event.latLng);
-                });
 
-                // Add mouseover effects
-                polygon.addListener('mouseover', () => {
-                    polygon.setOptions({
-                        fillOpacity: 0.5,
-                        strokeWeight: 3
-                    });
-                });
-
-                polygon.addListener('mouseout', () => {
-                    polygon.setOptions({
-                        fillOpacity: 0.35,
-                        strokeWeight: 2
-                    });
-                });
-
-                return { polygon, data: zone };
-            });
-
-            this.overlays.flood = floodPolygons;
-            console.log(`Loaded ${floodPolygons.length} FEMA flood zones`);
-            
-        } catch (error) {
-            console.error('Error loading flood zones:', error);
-            // Use fallback data on error
-            this.loadFallbackFloodZones();
-        }
-    }
-
-    async fetchFEMAFloodZones() {
-        const bounds = this.map.getBounds();
-        let mapBounds;
-        
-        if (!bounds) {
-            // Use Houston area bounds if map bounds not available
-            mapBounds = {
-                north: 30.1,
-                south: 29.4,
-                east: -94.9,
-                west: -95.8
-            };
-        } else {
-            mapBounds = {
-                north: bounds.getNorthEast().lat(),
-                south: bounds.getSouthWest().lat(),
-                east: bounds.getNorthEast().lng(),
-                west: bounds.getSouthWest().lng()
-            };
-        }
-
-        // Check cache first
-        const cacheKey = `${mapBounds.north}_${mapBounds.south}_${mapBounds.east}_${mapBounds.west}`;
-        const now = Date.now();
-        
-        if (this.floodDataCache.has(cacheKey) && 
-            (now - this.lastFloodDataFetch) < this.FLOOD_CACHE_DURATION) {
-            console.log('Using cached flood zone data');
-            return this.floodDataCache.get(cacheKey);
-        }
-
-        // Fetch new data
-        const floodData = await this.queryFEMAFloodService(mapBounds);
-        
-        // Cache the result
-        if (floodData && floodData.length > 0) {
-            this.floodDataCache.set(cacheKey, floodData);
-            this.lastFloodDataFetch = now;
-            
-            // Limit cache size to prevent memory issues
-            if (this.floodDataCache.size > 10) {
-                const firstKey = this.floodDataCache.keys().next().value;
-                this.floodDataCache.delete(firstKey);
-            }
-        }
-
-        return floodData;
-    }
-
-    async queryFEMAFloodService(bounds) {
-        try {
-            // FEMA National Flood Hazard Layer REST Service
-            const baseUrl = 'https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query';
-            
-            const params = new URLSearchParams({
-                f: 'geojson',
-                where: '1=1',
-                geometry: `${bounds.west},${bounds.south},${bounds.east},${bounds.north}`,
-                geometryType: 'esriGeometryEnvelope',
-                spatialRel: 'esriSpatialRelIntersects',
-                outFields: 'FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE,V_DATUM,SOURCE_CIT',
-                returnGeometry: true,
-                maxRecordCount: 1000
-            });
-
-            const response = await fetch(`${baseUrl}?${params}`);
-            
-            if (!response.ok) {
-                throw new Error(`FEMA API request failed: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return this.processFEMAFloodData(data);
-            
-        } catch (error) {
-            console.warn('FEMA API unavailable, trying alternative source:', error);
-            return this.queryAlternativeFloodService(bounds);
-        }
-    }
 
 
     async loadShelters() {
@@ -798,21 +660,11 @@ class DisasterMap {
 
         // Handle different layer types
         if (Array.isArray(layer)) {
-            // Check if this is the new flood zone format with polygon objects
-            if (layer.length > 0 && layer[0].polygon) {
-                const isVisible = layer[0].polygon.getMap() !== null;
-                layer.forEach(item => {
-                    item.polygon.setMap(isVisible ? null : this.map);
-                });
-                return !isVisible;
-            } else {
-                // Legacy format
-                const isVisible = layer[0].getMap() !== null;
-                layer.forEach(item => {
-                    item.setMap(isVisible ? null : this.map);
-                });
-                return !isVisible;
-            }
+            const isVisible = layer[0].getMap() !== null;
+            layer.forEach(item => {
+                item.setMap(isVisible ? null : this.map);
+            });
+            return !isVisible;
         } else {
             const isVisible = layer.getMap() !== null;
             layer.setMap(isVisible ? null : this.map);
@@ -823,15 +675,7 @@ class DisasterMap {
     clearAllLayers() {
         Object.values(this.overlays).forEach(layer => {
             if (Array.isArray(layer)) {
-                layer.forEach(item => {
-                    if (item.polygon) {
-                        // New format with polygon objects
-                        item.polygon.setMap(null);
-                    } else {
-                        // Legacy format
-                        item.setMap(null);
-                    }
-                });
+                layer.forEach(item => item.setMap(null));
             } else if (layer) {
                 layer.setMap(null);
             }
@@ -977,296 +821,6 @@ class DisasterMap {
         });
     }
 
-    async queryAlternativeFloodService(bounds) {
-        try {
-            // Alternative: ArcGIS Online FEMA Flood Zones service
-            const baseUrl = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Flood_Hazard_Areas/FeatureServer/0/query';
-            
-            const params = new URLSearchParams({
-                f: 'geojson',
-                where: '1=1',
-                geometry: `${bounds.west},${bounds.south},${bounds.east},${bounds.north}`,
-                geometryType: 'esriGeometryEnvelope',
-                spatialRel: 'esriSpatialRelIntersects',
-                outFields: '*',
-                returnGeometry: true,
-                maxRecordCount: 500
-            });
-
-            const response = await fetch(`${baseUrl}?${params}`);
-            
-            if (!response.ok) {
-                throw new Error(`Alternative flood service failed: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return this.processAlternativeFloodData(data);
-            
-        } catch (error) {
-            console.error('All flood data services unavailable:', error);
-            return null;
-        }
-    }
-
-    processFEMAFloodData(geojsonData) {
-        if (!geojsonData.features) return [];
-
-        return geojsonData.features.map(feature => {
-            const properties = feature.properties;
-            const geometry = feature.geometry;
-
-            // Convert GeoJSON coordinates to Google Maps format
-            const coordinates = this.convertGeoJSONToGoogleMaps(geometry);
-
-            return {
-                floodZone: properties.FLD_ZONE || 'Unknown',
-                subtype: properties.ZONE_SUBTY || '',
-                sfha: properties.SFHA_TF === 'T', // Special Flood Hazard Area
-                baseFloodElevation: properties.STATIC_BFE || null,
-                datum: properties.V_DATUM || '',
-                source: properties.SOURCE_CIT || 'FEMA',
-                coordinates: coordinates,
-                name: this.getFloodZoneName(properties.FLD_ZONE, properties.ZONE_SUBTY),
-                description: this.getFloodZoneDescription(properties.FLD_ZONE, properties.SFHA_TF === 'T')
-            };
-        });
-    }
-
-    processAlternativeFloodData(geojsonData) {
-        if (!geojsonData.features) return [];
-
-        return geojsonData.features.map(feature => {
-            const properties = feature.properties;
-            const geometry = feature.geometry;
-
-            const coordinates = this.convertGeoJSONToGoogleMaps(geometry);
-
-            return {
-                floodZone: properties.ZONE || properties.FLD_ZONE || 'X',
-                subtype: properties.SUBTYPE || '',
-                sfha: properties.SFHA === 'YES' || properties.SFHA_TF === 'T',
-                coordinates: coordinates,
-                name: this.getFloodZoneName(properties.ZONE || properties.FLD_ZONE),
-                description: this.getFloodZoneDescription(properties.ZONE || properties.FLD_ZONE, properties.SFHA === 'YES')
-            };
-        });
-    }
-
-    convertGeoJSONToGoogleMaps(geometry) {
-        if (geometry.type === 'Polygon') {
-            return geometry.coordinates[0].map(coord => ({
-                lat: coord[1],
-                lng: coord[0]
-            }));
-        } else if (geometry.type === 'MultiPolygon') {
-            // Return the largest polygon for simplicity
-            const polygons = geometry.coordinates.map(poly => 
-                poly[0].map(coord => ({
-                    lat: coord[1],
-                    lng: coord[0]
-                }))
-            );
-            return polygons.reduce((largest, current) => 
-                current.length > largest.length ? current : largest
-            );
-        }
-        return [];
-    }
-
-    getFloodZoneColor(floodZone) {
-        const colors = {
-            'A': { fill: '#FF0000', stroke: '#CC0000' }, // High Risk - Red
-            'AE': { fill: '#FF0000', stroke: '#CC0000' }, // High Risk - Red  
-            'AH': { fill: '#FF0000', stroke: '#CC0000' }, // High Risk - Red
-            'AO': { fill: '#FF0000', stroke: '#CC0000' }, // High Risk - Red
-            'AR': { fill: '#FF0000', stroke: '#CC0000' }, // High Risk - Red
-            'V': { fill: '#8B0000', stroke: '#660000' }, // Coastal High Risk - Dark Red
-            'VE': { fill: '#8B0000', stroke: '#660000' }, // Coastal High Risk - Dark Red
-            'X': { fill: '#90EE90', stroke: '#32CD32' }, // Moderate/Low Risk - Light Green
-            'X500': { fill: '#FFB347', stroke: '#FF8C00' }, // 500-year flood - Orange
-            'D': { fill: '#D3D3D3', stroke: '#A9A9A9' }, // Undetermined - Gray
-            'OPEN WATER': { fill: '#4169E1', stroke: '#0000CD' } // Open Water - Blue
-        };
-
-        return colors[floodZone] || colors['X']; // Default to moderate risk
-    }
-
-    getFloodZoneZIndex(floodZone) {
-        const zIndices = {
-            'V': 100, 'VE': 100, // Coastal high risk on top
-            'A': 90, 'AE': 90, 'AH': 90, 'AO': 90, 'AR': 90, // High risk
-            'X500': 80, // 500-year
-            'X': 70, // Moderate/low risk
-            'D': 60, // Undetermined
-            'OPEN WATER': 50 // Water bodies at bottom
-        };
-        return zIndices[floodZone] || 70;
-    }
-
-    getFloodZoneName(floodZone, subtype = '') {
-        const names = {
-            'A': 'High Risk Flood Zone A',
-            'AE': 'High Risk Flood Zone AE (Base Flood Elevation Determined)',
-            'AH': 'High Risk Flood Zone AH (Shallow Flooding)',
-            'AO': 'High Risk Flood Zone AO (Sheet Flow)',
-            'AR': 'High Risk Flood Zone AR (Temporarily Flooded)',
-            'V': 'Coastal High Risk Flood Zone V',
-            'VE': 'Coastal High Risk Flood Zone VE',
-            'X': 'Moderate to Low Risk Area',
-            'X500': '500-Year Flood Zone (0.2% Annual Chance)',
-            'D': 'Undetermined Risk Area',
-            'OPEN WATER': 'Open Water Area'
-        };
-
-        let name = names[floodZone] || `Flood Zone ${floodZone}`;
-        if (subtype) {
-            name += ` (${subtype})`;
-        }
-        return name;
-    }
-
-    getFloodZoneDescription(floodZone, isSFHA = false) {
-        const descriptions = {
-            'A': 'Areas with 1% annual chance of flooding. Base Flood Elevation not determined.',
-            'AE': 'Areas with 1% annual chance of flooding and Base Flood Elevation determined.',
-            'AH': 'Areas with 1% annual chance of shallow flooding (1-3 feet deep).',
-            'AO': 'Areas with 1% annual chance of sheet flow flooding.',
-            'AR': 'Areas that result from the decertification of a previously accredited flood control system.',
-            'V': 'Coastal areas with 1% annual chance of flooding and additional hazards from storm waves.',
-            'VE': 'Coastal areas with 1% annual chance of flooding, storm wave hazards, and Base Flood Elevation determined.',
-            'X': isSFHA ? 'Areas of moderate flood hazard (0.2% annual chance)' : 'Areas of minimal flood hazard',
-            'X500': 'Areas with 0.2% annual chance of flooding (500-year flood).',
-            'D': 'Areas with undetermined but possible flood hazards.',
-            'OPEN WATER': 'Open water areas such as lakes, rivers, and streams.'
-        };
-
-        return descriptions[floodZone] || 'Flood hazard information not available.';
-    }
-
-    showFloodZoneInfo(zone, position) {
-        const riskLevel = this.getFloodRiskLevel(zone.floodZone);
-        const insuranceRequired = zone.sfha;
-        
-        this.infoWindow.setContent(`
-            <div class="p-4 max-w-sm">
-                <h3 class="font-bold text-blue-600 mb-2">${zone.name}</h3>
-                <div class="space-y-2 text-sm">
-                    <p><strong>Zone:</strong> ${zone.floodZone}</p>
-                    <p><strong>Risk Level:</strong> <span class="font-semibold ${riskLevel.color}">${riskLevel.text}</span></p>
-                    <p class="text-xs text-gray-700">${zone.description}</p>
-                    ${zone.baseFloodElevation ? `<p><strong>Base Flood Elevation:</strong> ${zone.baseFloodElevation} ft</p>` : ''}
-                    <div class="mt-3 p-2 ${insuranceRequired ? 'bg-red-50 border border-red-200' : 'bg-blue-50 border border-blue-200'} rounded">
-                        <p class="text-xs font-semibold ${insuranceRequired ? 'text-red-700' : 'text-blue-700'}">
-                            ${insuranceRequired ? '⚠️ Flood Insurance Required' : 'ℹ️ Flood Insurance Recommended'}
-                        </p>
-                        <p class="text-xs mt-1 ${insuranceRequired ? 'text-red-600' : 'text-blue-600'}">
-                            ${insuranceRequired ? 
-                                'Mortgage lenders require flood insurance in this zone.' : 
-                                'Consider flood insurance - 30-day waiting period applies.'}
-                        </p>
-                    </div>
-                </div>
-                <div class="mt-3 flex gap-2">
-                    <button onclick="window.open('https://www.floodsmart.gov/flood-map-zone/${zone.floodZone.toLowerCase()}', '_blank')" 
-                            class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                        Learn More
-                    </button>
-                    <button onclick="window.open('https://www.floodsmart.gov', '_blank')" 
-                            class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">
-                        Get Insurance
-                    </button>
-                </div>
-            </div>
-        `);
-        this.infoWindow.setPosition(position);
-        this.infoWindow.open(this.map);
-    }
-
-    getFloodRiskLevel(floodZone) {
-        const riskLevels = {
-            'A': { text: 'High Risk', color: 'text-red-600' },
-            'AE': { text: 'High Risk', color: 'text-red-600' },
-            'AH': { text: 'High Risk', color: 'text-red-600' },
-            'AO': { text: 'High Risk', color: 'text-red-600' },
-            'AR': { text: 'High Risk', color: 'text-red-600' },
-            'V': { text: 'Coastal High Risk', color: 'text-red-800' },
-            'VE': { text: 'Coastal High Risk', color: 'text-red-800' },
-            'X': { text: 'Moderate to Low Risk', color: 'text-green-600' },
-            'X500': { text: 'Moderate Risk', color: 'text-yellow-600' },
-            'D': { text: 'Undetermined Risk', color: 'text-gray-600' },
-            'OPEN WATER': { text: 'Open Water', color: 'text-blue-600' }
-        };
-        
-        return riskLevels[floodZone] || { text: 'Unknown Risk', color: 'text-gray-600' };
-    }
-
-    loadFallbackFloodZones() {
-        // Enhanced fallback data with more realistic Houston flood zones
-        const floodZones = [
-            {
-                name: 'Buffalo Bayou High Risk Zone (AE)',
-                floodZone: 'AE',
-                coordinates: [
-                    { lat: 29.7604, lng: -95.3698 },
-                    { lat: 29.7650, lng: -95.3750 },
-                    { lat: 29.7700, lng: -95.3700 },
-                    { lat: 29.7650, lng: -95.3650 },
-                    { lat: 29.7604, lng: -95.3698 }
-                ],
-                sfha: true,
-                description: 'Areas with 1% annual chance of flooding and Base Flood Elevation determined.'
-            },
-            {
-                name: 'Brays Bayou Moderate Risk Zone (X500)',
-                floodZone: 'X500',
-                coordinates: [
-                    { lat: 29.7200, lng: -95.4000 },
-                    { lat: 29.7250, lng: -95.4050 },
-                    { lat: 29.7300, lng: -95.4000 },
-                    { lat: 29.7250, lng: -95.3950 },
-                    { lat: 29.7200, lng: -95.4000 }
-                ],
-                sfha: false,
-                description: 'Areas with 0.2% annual chance of flooding (500-year flood).'
-            },
-            {
-                name: 'White Oak Bayou High Risk Zone (A)',
-                floodZone: 'A',
-                coordinates: [
-                    { lat: 29.8000, lng: -95.4200 },
-                    { lat: 29.8050, lng: -95.4250 },
-                    { lat: 29.8100, lng: -95.4200 },
-                    { lat: 29.8050, lng: -95.4150 },
-                    { lat: 29.8000, lng: -95.4200 }
-                ],
-                sfha: true,
-                description: 'Areas with 1% annual chance of flooding. Base Flood Elevation not determined.'
-            }
-        ];
-
-        const floodPolygons = floodZones.map(zone => {
-            const color = this.getFloodZoneColor(zone.floodZone);
-            
-            const polygon = new google.maps.Polygon({
-                paths: zone.coordinates,
-                strokeColor: color.stroke,
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: color.fill,
-                fillOpacity: 0.35,
-                map: null // Initially hidden
-            });
-
-            polygon.addListener('click', (event) => {
-                this.showFloodZoneInfo(zone, event.latLng);
-            });
-
-            return { polygon, data: zone };
-        });
-
-        this.overlays.flood = floodPolygons;
-        console.log('Loaded fallback flood zones');
-    }
 }
 
 // Global function for navigation (called from info windows)
