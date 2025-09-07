@@ -4,8 +4,6 @@ class DisasterMap {
         this.map = null;
         this.markers = [];
         this.overlays = {
-            flood: null,
-            evacuation: null,
             shelters: null,
             medical: null
         };
@@ -185,123 +183,15 @@ class DisasterMap {
 
     async loadAllLayers() {
         await Promise.all([
-            this.loadFloodZones(),
-            this.loadEvacuationRoutes(),
             this.loadShelters(),
             this.loadMedicalCenters()
         ]);
     }
 
-    async loadFloodZones() {
-        // Create flood zone polygons
-        const floodZones = [
-            {
-                name: 'Buffalo Bayou High Risk Zone',
-                coordinates: [
-                    { lat: 29.7604, lng: -95.3698 },
-                    { lat: 29.7650, lng: -95.3750 },
-                    { lat: 29.7700, lng: -95.3700 },
-                    { lat: 29.7650, lng: -95.3650 },
-                    { lat: 29.7604, lng: -95.3698 }
-                ],
-                risk: 'high'
-            },
-            {
-                name: 'Brays Bayou Moderate Risk Zone',
-                coordinates: [
-                    { lat: 29.7200, lng: -95.4000 },
-                    { lat: 29.7250, lng: -95.4050 },
-                    { lat: 29.7300, lng: -95.4000 },
-                    { lat: 29.7250, lng: -95.3950 },
-                    { lat: 29.7200, lng: -95.4000 }
-                ],
-                risk: 'moderate'
-            }
-        ];
 
-        const floodPolygons = floodZones.map(zone => {
-            const color = zone.risk === 'high' ? '#dc2626' : '#f59e0b';
-            
-            const polygon = new google.maps.Polygon({
-                paths: zone.coordinates,
-                strokeColor: color,
-                strokeOpacity: 0.8,
-                strokeWeight: 2,
-                fillColor: color,
-                fillOpacity: 0.3,
-                map: null // Initially hidden
-            });
 
-            polygon.addListener('click', (event) => {
-                this.infoWindow.setContent(`
-                    <div class="p-3">
-                        <h3 class="font-bold text-blue-600">${zone.name}</h3>
-                        <p class="text-sm"><strong>Risk Level:</strong> ${zone.risk}</p>
-                        <p class="text-xs text-gray-600 mt-2">Click on map layers to show/hide flood zones</p>
-                    </div>
-                `);
-                this.infoWindow.setPosition(event.latLng);
-                this.infoWindow.open(this.map);
-            });
 
-            return polygon;
-        });
 
-        this.overlays.flood = floodPolygons;
-    }
-
-    async loadEvacuationRoutes() {
-        const routes = [
-            {
-                name: 'I-45 North Evacuation Route',
-                coordinates: [
-                    { lat: 29.7604, lng: -95.3698 },
-                    { lat: 29.8500, lng: -95.3700 },
-                    { lat: 29.9500, lng: -95.3750 }
-                ],
-                direction: 'North to Dallas'
-            },
-            {
-                name: 'US-59 Southwest Route',
-                coordinates: [
-                    { lat: 29.7604, lng: -95.3698 },
-                    { lat: 29.7000, lng: -95.4500 },
-                    { lat: 29.6500, lng: -95.5500 }
-                ],
-                direction: 'Southwest to Victoria'
-            }
-        ];
-
-        const evacuationPolylines = routes.map(route => {
-            const polyline = new google.maps.Polyline({
-                path: route.coordinates,
-                geodesic: true,
-                strokeColor: '#dc2626',
-                strokeOpacity: 0.8,
-                strokeWeight: 4,
-                map: null // Initially hidden
-            });
-
-            polyline.addListener('click', (event) => {
-                this.infoWindow.setContent(`
-                    <div class="p-3">
-                        <h3 class="font-bold text-red-600">${route.name}</h3>
-                        <p class="text-sm"><strong>Direction:</strong> ${route.direction}</p>
-                        <button onclick="disasterMap.getDirections('${route.coordinates[0].lat}', '${route.coordinates[0].lng}', '${route.coordinates[route.coordinates.length-1].lat}', '${route.coordinates[route.coordinates.length-1].lng}')" 
-                                class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                            Get Directions
-                        </button>
-                    </div>
-                `);
-                this.infoWindow.setPosition(event.latLng);
-                this.infoWindow.open(this.map);
-            });
-
-            return polyline;
-        });
-
-        this.overlays.evacuation = evacuationPolylines;
-    }
 
     async loadShelters() {
         try {
@@ -367,57 +257,340 @@ class DisasterMap {
 
     async loadMedicalCenters() {
         const medicalCenters = [
+            // Major Hospital Systems - Texas Medical Center
             {
                 name: 'Texas Medical Center',
                 coordinates: { lat: 29.7100, lng: -95.4000 },
                 type: 'Hospital Complex',
-                phone: '713-791-1000'
+                phone: '713-791-1000',
+                category: 'Major Hospital',
+                services: ['Emergency', 'Trauma', 'Specialty Care'],
+                address: '6565 Fannin St, Houston, TX 77030'
             },
             {
-                name: 'Memorial Hermann Hospital',
+                name: 'Memorial Hermann Hospital - TMC',
                 coordinates: { lat: 29.7030, lng: -95.3900 },
                 type: 'Level 1 Trauma Center',
-                phone: '713-704-4000'
+                phone: '713-704-4000',
+                category: 'Major Hospital',
+                services: ['Emergency', 'Trauma', 'Life Flight'],
+                address: '6411 Fannin St, Houston, TX 77030'
             },
             {
                 name: 'Ben Taub Hospital',
                 coordinates: { lat: 29.7110, lng: -95.3980 },
                 type: 'Level 1 Trauma Center',
-                phone: '713-873-2000'
+                phone: '713-873-2000',
+                category: 'Major Hospital',
+                services: ['Emergency', 'Trauma', 'Public Hospital'],
+                address: '1502 Taub Loop, Houston, TX 77030'
+            },
+            {
+                name: 'Houston Methodist Hospital',
+                coordinates: { lat: 29.7200, lng: -95.3950 },
+                type: 'Magnet Hospital',
+                phone: '713-790-3311',
+                category: 'Major Hospital',
+                services: ['Emergency', 'Heart Care', 'Cancer Care'],
+                address: '6565 Fannin St, Houston, TX 77030'
+            },
+            {
+                name: 'MD Anderson Cancer Center',
+                coordinates: { lat: 29.7080, lng: -95.3970 },
+                type: 'Cancer Specialty Hospital',
+                phone: '713-792-2121',
+                category: 'Specialty Hospital',
+                services: ['Cancer Care', 'Emergency Oncology'],
+                address: '1515 Holcombe Blvd, Houston, TX 77030'
+            },
+            {
+                name: 'Texas Children\'s Hospital',
+                coordinates: { lat: 29.7120, lng: -95.3980 },
+                type: 'Pediatric Hospital',
+                phone: '832-824-1000',
+                category: 'Pediatric Hospital',
+                services: ['Pediatric Emergency', 'Children\'s Trauma'],
+                address: '6621 Fannin St, Houston, TX 77030'
+            },
+
+            // Memorial Hermann System - Other Locations
+            {
+                name: 'Memorial Hermann Northeast',
+                coordinates: { lat: 29.8740, lng: -95.2180 },
+                type: 'General Hospital',
+                phone: '281-540-7700',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'General Medicine'],
+                address: '18951 Memorial North, Humble, TX 77338'
+            },
+            {
+                name: 'Memorial Hermann Northwest',
+                coordinates: { lat: 29.9520, lng: -95.6180 },
+                type: 'General Hospital',
+                phone: '281-440-1000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Surgery', 'Women\'s Services'],
+                address: '1635 N Loop W, Houston, TX 77008'
+            },
+            {
+                name: 'Memorial Hermann Southwest',
+                coordinates: { lat: 29.6420, lng: -95.4810 },
+                type: 'General Hospital',
+                phone: '713-456-5000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Heart Care'],
+                address: '7600 Beechnut St, Houston, TX 77074'
+            },
+            {
+                name: 'Memorial Hermann Southeast',
+                coordinates: { lat: 29.6580, lng: -95.2280 },
+                type: 'General Hospital',
+                phone: '281-929-6100',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'General Medicine'],
+                address: '11800 Astoria Blvd, Houston, TX 77089'
+            },
+
+            // Houston Methodist System
+            {
+                name: 'Houston Methodist West',
+                coordinates: { lat: 29.7380, lng: -95.6390 },
+                type: 'General Hospital',
+                phone: '713-394-7000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Surgery', 'Heart Care'],
+                address: '18500 Katy Fwy, Houston, TX 77094'
+            },
+            {
+                name: 'Houston Methodist Sugar Land',
+                coordinates: { lat: 29.6190, lng: -95.6350 },
+                type: 'General Hospital',
+                phone: '281-274-7000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Women\'s Services'],
+                address: '16655 Southwest Fwy, Sugar Land, TX 77479'
+            },
+            {
+                name: 'Houston Methodist Clear Lake',
+                coordinates: { lat: 29.5540, lng: -95.0890 },
+                type: 'General Hospital',
+                phone: '281-333-2100',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'General Medicine'],
+                address: '18300 Houston Methodist Dr, Nassau Bay, TX 77058'
+            },
+            {
+                name: 'Houston Methodist Willowbrook',
+                coordinates: { lat: 29.9890, lng: -95.6120 },
+                type: 'General Hospital',
+                phone: '281-477-1000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Surgery'],
+                address: '18220 Tomball Pkwy, Houston, TX 77070'
+            },
+
+            // CHI St. Joseph Health System
+            {
+                name: 'St. Joseph Medical Center',
+                coordinates: { lat: 29.8120, lng: -95.3380 },
+                type: 'General Hospital',
+                phone: '713-757-1000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Heart Care', 'Surgery'],
+                address: '1401 St Joseph Pkwy, Houston, TX 77002'
+            },
+
+            // HCA Houston Healthcare System
+            {
+                name: 'HCA Houston Healthcare Medical Center',
+                coordinates: { lat: 29.7280, lng: -95.3420 },
+                type: 'General Hospital',
+                phone: '713-790-0232',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Surgery'],
+                address: '2121 W Holcombe Blvd, Houston, TX 77030'
+            },
+            {
+                name: 'HCA Houston Healthcare Northwest',
+                coordinates: { lat: 29.8720, lng: -95.5580 },
+                type: 'General Hospital',
+                phone: '281-440-1000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'General Medicine'],
+                address: '710 FM 1960 Rd W, Houston, TX 77090'
+            },
+            {
+                name: 'HCA Houston Healthcare Clear Lake',
+                coordinates: { lat: 29.5420, lng: -95.0720 },
+                type: 'General Hospital',
+                phone: '281-332-2511',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Women\'s Services'],
+                address: '500 Medical Center Blvd, Webster, TX 77598'
+            },
+
+            // Specialty and Emergency Centers
+            {
+                name: 'TIRR Memorial Hermann',
+                coordinates: { lat: 29.7150, lng: -95.3900 },
+                type: 'Rehabilitation Hospital',
+                phone: '713-799-5000',
+                category: 'Specialty Hospital',
+                services: ['Rehabilitation', 'Emergency Rehab'],
+                address: '1333 Moursund St, Houston, TX 77030'
+            },
+            {
+                name: 'Shriners Children\'s Texas',
+                coordinates: { lat: 29.7180, lng: -95.3920 },
+                type: 'Pediatric Specialty Hospital',
+                phone: '713-797-1616',
+                category: 'Pediatric Hospital',
+                services: ['Pediatric Specialty Care', 'Burn Care'],
+                address: '6977 Main St, Houston, TX 77030'
+            },
+
+            // Emergency Centers and Urgent Care
+            {
+                name: 'Memorial Hermann Emergency Center - Katy',
+                coordinates: { lat: 29.7590, lng: -95.8240 },
+                type: 'Emergency Center',
+                phone: '281-644-7000',
+                category: 'Emergency Center',
+                services: ['24/7 Emergency Care'],
+                address: '23960 Katy Fwy, Katy, TX 77494'
+            },
+            {
+                name: 'Memorial Hermann Emergency Center - Pearland',
+                coordinates: { lat: 29.5630, lng: -95.2860 },
+                type: 'Emergency Center',
+                phone: '713-242-3000',
+                category: 'Emergency Center',
+                services: ['24/7 Emergency Care'],
+                address: '2555 Pearland Pkwy, Pearland, TX 77581'
+            },
+            {
+                name: 'Memorial Hermann Emergency Center - Cypress',
+                coordinates: { lat: 29.9420, lng: -95.6980 },
+                type: 'Emergency Center',
+                phone: '281-897-2700',
+                category: 'Emergency Center',
+                services: ['24/7 Emergency Care'],
+                address: '27700 Northwest Fwy, Cypress, TX 77433'
+            },
+            {
+                name: 'NextCare Urgent Care - Multiple Locations',
+                coordinates: { lat: 29.7604, lng: -95.3698 },
+                type: 'Urgent Care Network',
+                phone: '713-364-3627',
+                category: 'Urgent Care',
+                services: ['Urgent Care', 'Walk-in Clinic'],
+                address: 'Multiple Houston Locations'
+            },
+            {
+                name: 'CareNow Urgent Care - Network',
+                coordinates: { lat: 29.7304, lng: -95.4000 },
+                type: 'Urgent Care Network',
+                phone: '214-544-7700',
+                category: 'Urgent Care',
+                services: ['Urgent Care', 'Occupational Health'],
+                address: 'Multiple Houston Locations'
+            },
+
+            // Additional Regional Hospitals
+            {
+                name: 'Houston Northwest Medical Center',
+                coordinates: { lat: 29.8890, lng: -95.5520 },
+                type: 'General Hospital',
+                phone: '281-440-1000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Surgery', 'Women\'s Services'],
+                address: '710 FM 1960 Rd W, Houston, TX 77090'
+            },
+            {
+                name: 'Park Plaza Hospital',
+                coordinates: { lat: 29.7380, lng: -95.3920 },
+                type: 'General Hospital',
+                phone: '713-527-5000',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Heart Care'],
+                address: '1313 Hermann Dr, Houston, TX 77004'
+            },
+            {
+                name: 'West Houston Medical Center',
+                coordinates: { lat: 29.7420, lng: -95.6180 },
+                type: 'General Hospital',
+                phone: '281-558-3444',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'General Medicine'],
+                address: '12141 Richmond Ave, Houston, TX 77082'
+            },
+            {
+                name: 'Clear Lake Regional Medical Center',
+                coordinates: { lat: 29.5280, lng: -95.0890 },
+                type: 'General Hospital',
+                phone: '281-332-2511',
+                category: 'Regional Hospital',
+                services: ['Emergency', 'Women\'s Services'],
+                address: '500 W Medical Center Blvd, Webster, TX 77598'
             }
         ];
 
         const medicalMarkers = medicalCenters.map(center => {
+            // Get appropriate icon and color based on facility type
+            const iconInfo = this.getMedicalFacilityIcon(center.category);
+            
             const marker = new google.maps.Marker({
                 position: center.coordinates,
                 map: null, // Initially hidden
                 title: center.name,
                 icon: {
                     url: 'data:image/svg+xml;base64,' + btoa(`
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
-                            <circle cx="12" cy="12" r="10" fill="#7c3aed" stroke="#ffffff" stroke-width="2"/>
-                            <path d="M12 6v6l4 2-1 1.5-5-3V6h2z" fill="#ffffff"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">
+                            <circle cx="12" cy="12" r="10" fill="${iconInfo.color}" stroke="#ffffff" stroke-width="2"/>
+                            <path d="${iconInfo.path}" fill="#ffffff"/>
                         </svg>
                     `),
-                    scaledSize: new google.maps.Size(30, 30)
+                    scaledSize: new google.maps.Size(32, 32)
                 }
             });
 
             marker.addListener('click', () => {
+                const distance = this.userLocation ? 
+                    this.calculateDistance(this.userLocation, center.coordinates) : null;
+                
                 this.infoWindow.setContent(`
-                    <div class="p-3">
-                        <h3 class="font-bold text-purple-600">${center.name}</h3>
-                        <p class="text-sm text-gray-600">${center.type}</p>
-                        <div class="mt-3 space-x-2">
+                    <div class="p-4 max-w-sm">
+                        <h3 class="font-bold text-red-600 mb-2">${center.name}</h3>
+                        <div class="space-y-2 text-sm">
+                            <p><strong>Type:</strong> ${center.type}</p>
+                            <p><strong>Category:</strong> <span class="px-2 py-1 rounded text-xs ${iconInfo.categoryClass}">${center.category}</span></p>
+                            ${center.address ? `<p><strong>Address:</strong> ${center.address}</p>` : ''}
+                            ${distance ? `<p><strong>Distance:</strong> ${distance.toFixed(1)} miles</p>` : ''}
+                            <div class="mt-2">
+                                <p class="font-semibold text-gray-700">Services:</p>
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    ${center.services.map(service => 
+                                        `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">${service}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
                             <button onclick="disasterMap.getDirections(${this.userLocation?.lat || CONFIG.HOUSTON_CENTER.lat}, ${this.userLocation?.lng || CONFIG.HOUSTON_CENTER.lng}, ${center.coordinates.lat}, ${center.coordinates.lng})" 
-                                    class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
-                                Directions
+                                    class="px-3 py-2 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 flex items-center">
+                                <i class="fas fa-directions mr-1"></i> Directions
                             </button>
                             <button onclick="window.open('tel:${center.phone}', '_self')" 
-                                    class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">
-                                Call
+                                    class="px-3 py-2 bg-red-600 text-white text-xs rounded hover:bg-red-700 flex items-center">
+                                <i class="fas fa-phone mr-1"></i> Call
                             </button>
                         </div>
+                        ${center.category === 'Emergency Center' ? 
+                            '<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded"><p class="text-xs text-red-700"><i class="fas fa-exclamation-triangle mr-1"></i>24/7 Emergency Services Available</p></div>' : 
+                            ''}
+                        ${center.category === 'Urgent Care' ? 
+                            '<div class="mt-2 p-2 bg-orange-50 border border-orange-200 rounded"><p class="text-xs text-orange-700"><i class="fas fa-clock mr-1"></i>Walk-in Care Available</p></div>' : 
+                            ''}
                     </div>
                 `);
                 this.infoWindow.open(this.map, marker);
@@ -427,6 +600,58 @@ class DisasterMap {
         });
 
         this.overlays.medical = medicalMarkers;
+    }
+
+    getMedicalFacilityIcon(category) {
+        const iconMap = {
+            'Major Hospital': {
+                color: '#DC2626', // Red
+                path: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z', // Star
+                categoryClass: 'bg-red-100 text-red-700'
+            },
+            'Regional Hospital': {
+                color: '#7C3AED', // Purple
+                path: 'M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 8h2v8H4V8zm3 0h2v8H7V8zm3 0h2v8h-2V8z', // Hospital cross
+                categoryClass: 'bg-purple-100 text-purple-700'
+            },
+            'Specialty Hospital': {
+                color: '#059669', // Green
+                path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z', // Check mark
+                categoryClass: 'bg-green-100 text-green-700'
+            },
+            'Pediatric Hospital': {
+                color: '#F59E0B', // Amber
+                path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z', // Pediatric symbol
+                categoryClass: 'bg-amber-100 text-amber-700'
+            },
+            'Emergency Center': {
+                color: '#EF4444', // Bright red
+                path: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2zM12 6L9.5 11.5 4 12l4 3.5-1 5.5 5-3 5 3-1-5.5 4-3.5-5.5-.5L12 6z', // Emergency star
+                categoryClass: 'bg-red-100 text-red-800'
+            },
+            'Urgent Care': {
+                color: '#F97316', // Orange
+                path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.5 6L12 10.5 8.5 8 11 5.5 13 7.5 15.5 8zM12 18.5c-1.25 0-2.45-.2-3.57-.57.35-.51.9-.93 1.64-.93.71 0 1.36.35 1.93.93.57-.58 1.22-.93 1.93-.93.74 0 1.29.42 1.64.93-1.12.37-2.32.57-3.57.57z', // Urgent care symbol
+                categoryClass: 'bg-orange-100 text-orange-700'
+            }
+        };
+
+        return iconMap[category] || iconMap['Regional Hospital']; // Default to Regional Hospital
+    }
+
+    calculateDistance(point1, point2) {
+        const R = 3959; // Earth's radius in miles
+        const dLat = this.toRadians(point2.lat - point1.lat);
+        const dLng = this.toRadians(point2.lng - point1.lng);
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(this.toRadians(point1.lat)) * Math.cos(this.toRadians(point2.lat)) *
+                  Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    toRadians(degrees) {
+        return degrees * (Math.PI / 180);
     }
 
     toggleLayer(layerName) {
@@ -595,6 +820,7 @@ class DisasterMap {
             });
         });
     }
+
 }
 
 // Global function for navigation (called from info windows)
