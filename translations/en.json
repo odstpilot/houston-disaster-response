@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Houston Disaster Response",
+    "tagline": "Stay prepared, stay safe, stay connected"
+  },
+  "navigation": {
+    "language": "EN",
+    "emergency": "Emergency: 911",
+    "call311": "311",
+    "evacuation": "Evacuation Resources",
+    "shelters": "Shelters",
+    "medical": "Medical Help"
+  },
+  "dashboard": {
+    "currentConditions": "Current Conditions - Houston Area",
+    "weatherStatus": "Weather Status",
+    "floodRisk": "Flood Risk", 
+    "airQuality": "Air Quality",
+    "noActiveWarnings": "No active warnings",
+    "bayousNormal": "Bayous at normal levels",
+    "disasterPreparedness": "Disaster Preparedness"
+  },
+  "disasters": {
+    "hurricane": "Hurricane",
+    "flooding": "Flooding", 
+    "extremeHeat": "Extreme Heat",
+    "winterStorm": "Winter Storm",
+    "chemical": "Chemical",
+    "tornado": "Tornado"
+  },
+  "checklist": {
+    "title": "Emergency Preparedness Checklist",
+    "progress": "Your Progress",
+    "complete": "Complete",
+    "emergencyKit": "Emergency Supply Kit",
+    "importantDocs": "Important Documents",
+    "homePrep": "Home Preparation",
+    "backToHome": "Back to Home"
+  },
+  "emergencyKit": {
+    "water": "Water (1 gallon per person per day for 3 days)",
+    "food": "Non-perishable food (3-day supply)",
+    "radio": "Battery-powered or hand-crank radio",
+    "flashlight": "Flashlight and extra batteries",
+    "firstAid": "First aid kit",
+    "medications": "Medications (7-day supply)",
+    "cellPhone": "Cell phone with chargers and backup battery"
+  },
+  "documents": {
+    "insurance": "Insurance policies (copies or photos)",
+    "identification": "Identification documents", 
+    "bankRecords": "Bank account records",
+    "medicalRecords": "Medical records"
+  },
+  "map": {
+    "title": "Your Area Map"
+  },
+  "statusValues": {
+    "clear": "clear",
+    "normal": "Normal",
+    "moderate": "Moderate"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Respuesta a Desastres de Houston",
+    "tagline": "Mantente preparado, mantente seguro, mantente conectado"
+  },
+  "navigation": {
+    "language": "ES",
+    "emergency": "Emergencia: 911",
+    "call311": "311",
+    "evacuation": "Recursos de Evacuación",
+    "shelters": "Refugios",
+    "medical": "Ayuda Médica"
+  },
+  "dashboard": {
+    "currentConditions": "Condiciones Actuales - Área de Houston",
+    "weatherStatus": "Estado del Tiempo",
+    "floodRisk": "Riesgo de Inundación",
+    "airQuality": "Calidad del Aire",
+    "noActiveWarnings": "Sin advertencias activas",
+    "bayousNormal": "Bayous en niveles normales",
+    "disasterPreparedness": "Preparación para Desastres"
+  },
+  "disasters": {
+    "hurricane": "Huracán",
+    "flooding": "Inundación",
+    "extremeHeat": "Calor Extremo",
+    "winterStorm": "Tormenta de Invierno",
+    "chemical": "Químico",
+    "tornado": "Tornado"
+  },
+  "checklist": {
+    "title": "Lista de Preparación para Emergencias",
+    "progress": "Tu Progreso",
+    "complete": "Completo",
+    "emergencyKit": "Kit de Suministros de Emergencia",
+    "importantDocs": "Documentos Importantes",
+    "homePrep": "Preparación del Hogar",
+    "backToHome": "Volver al Inicio"
+  },
+  "emergencyKit": {
+    "water": "Agua (1 galón por persona por día durante 3 días)",
+    "food": "Comida no perecedera (suministro de 3 días)",
+    "radio": "Radio de baterías o de manivela",
+    "flashlight": "Linterna y baterías adicionales",
+    "firstAid": "Kit de primeros auxilios",
+    "medications": "Medicamentos (suministro de 7 días)",
+    "cellPhone": "Teléfono celular con cargadores y batería de respaldo"
+  },
+  "documents": {
+    "insurance": "Pólizas de seguro (copias o fotos)",
+    "identification": "Documentos de identificación",
+    "bankRecords": "Registros de cuentas bancarias",
+    "medicalRecords": "Registros médicos"
+  },
+  "map": {
+    "title": "Mapa de Tu Área"
+  },
+  "statusValues": {
+    "clear": "despejado",
+    "normal": "Normal",
+    "moderate": "Moderado"
+  }
+}

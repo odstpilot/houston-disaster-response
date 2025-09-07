@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Houston Disaster Response & Recovery Assistant</title>
+    <title data-translate="app.title">Houston Disaster Response & Recovery Assistant</title>
     <meta name="description" content="Personalized disaster preparedness and recovery advice for Houston residents">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="favicon.png">
@@ -34,7 +34,10 @@
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
                     <i class="fas fa-shield-alt text-2xl mr-3"></i>
-                    <h1 class="text-xl font-bold">Houston Disaster Response</h1>
+                                    <h1 class="text-xl font-bold text-white">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    <span data-translate="app.title">Houston Disaster Response</span>
+                </h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button id="languageBtn" class="p-2 hover:bg-blue-800 rounded">
@@ -57,19 +60,19 @@
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap gap-2 text-sm">
                 <button id="emergency911Btn" class="quick-action px-3 py-1 bg-red-600 rounded hover:bg-red-700">
-                    <i class="fas fa-phone-alt mr-1"></i> Emergency: 911
+                    <i class="fas fa-phone-alt mr-1"></i> <span data-translate="navigation.emergency">Emergency: 911</span>
                 </button>
                 <button id="info311Btn" class="quick-action px-3 py-1 bg-blue-600 rounded hover:bg-blue-700">
-                    <i class="fas fa-phone-alt mr-1"></i> 311
+                    <i class="fas fa-phone-alt mr-1"></i> <span data-translate="navigation.call311">311</span>
                 </button>
                 <a href="evacuation_resources.html" class="quick-action px-3 py-1 bg-orange-600 rounded hover:bg-orange-700 flex items-center">
-                    <i class="fas fa-book-reader mr-1"></i> Evacuation Resources
+                    <i class="fas fa-book-reader mr-1"></i> <span data-translate="navigation.evacuation">Evacuation Resources</span>
                 </a>
                 <a href="shelter_resources.html" class="quick-action px-3 py-1 bg-yellow-600 rounded hover:bg-yellow-700 flex items-center">
-                    <i class="fas fa-home mr-1"></i> Shelters
+                    <i class="fas fa-home mr-1"></i> <span data-translate="navigation.shelters">Shelters</span>
                 </a>
                 <a href="medical_resources.html" class="quick-action px-3 py-1 bg-green-600 rounded hover:bg-green-700 flex items-center">
-                    <i class="fas fa-kit-medical mr-1"></i> Medical Help
+                    <i class="fas fa-kit-medical mr-1"></i> <span data-translate="navigation.medical">Medical Help</span>
                 </a>
             </div>
         </div>
@@ -83,22 +86,22 @@
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">
                     <i class="fas fa-cloud-sun text-blue-500 mr-2"></i>
-                    Current Conditions - Houston Area
+                    <span data-translate="dashboard.currentConditions">Current Conditions - Houston Area</span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="status-card p-4 bg-green-50 rounded-lg border border-green-200">
-                        <h3 class="font-semibold text-green-800">Weather Status</h3>
-                        <p class="text-2xl font-bold text-green-700">Clear</p>
-                        <p class="text-sm text-gray-600">No active warnings</p>
+                        <h3 class="font-semibold text-green-800" data-translate="dashboard.weatherStatus">Weather Status</h3>
+                        <p class="text-2xl font-bold text-green-700" data-translate="statusValues.clear">Clear</p>
+                        <p class="text-sm text-gray-600" data-translate="dashboard.noActiveWarnings">No active warnings</p>
                     </div>
                     <div class="status-card p-4 bg-blue-50 rounded-lg border border-blue-200">
-                        <h3 class="font-semibold text-blue-800">Flood Risk</h3>
-                        <p class="text-2xl font-bold text-blue-700">Low</p>
-                        <p class="text-sm text-gray-600">Bayous at normal levels</p>
+                        <h3 class="font-semibold text-blue-800" data-translate="dashboard.floodRisk">Flood Risk</h3>
+                        <p class="text-2xl font-bold text-blue-700" data-translate="statusValues.normal">Normal</p>
+                        <p class="text-sm text-gray-600" data-translate="dashboard.bayousNormal">Bayous at normal levels</p>
                     </div>
                     <div class="status-card p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <h3 class="font-semibold text-yellow-800">Air Quality</h3>
-                        <p class="text-2xl font-bold text-yellow-700">Moderate</p>
+                        <h3 class="font-semibold text-yellow-800" data-translate="dashboard.airQuality">Air Quality</h3>
+                        <p class="text-2xl font-bold text-yellow-700" data-translate="statusValues.moderate">Moderate</p>
                         <p class="text-sm text-gray-600">AQI: 65</p>
                     </div>
                 </div>
@@ -106,31 +109,31 @@
 
             <!-- Disaster Type Cards -->
             <div class="mb-6">
-                <h2 class="text-xl font-bold mb-4 text-gray-800">Disaster Preparedness</h2>
+                <h2 class="text-xl font-bold mb-4 text-gray-800" data-translate="dashboard.disasterPreparedness">Disaster Preparedness</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="hurricane">
                         <i class="fas fa-hurricane text-3xl text-red-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Hurricane</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.hurricane">Hurricane</p>
                     </button>
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="flood">
                         <i class="fas fa-water text-3xl text-blue-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Flooding</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.flooding">Flooding</p>
                     </button>
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="heat">
                         <i class="fas fa-temperature-high text-3xl text-orange-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Extreme Heat</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.extremeHeat">Extreme Heat</p>
                     </button>
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="freeze">
                         <i class="fas fa-snowflake text-3xl text-cyan-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Winter Storm</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.winterStorm">Winter Storm</p>
                     </button>
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="chemical">
                         <i class="fas fa-radiation text-3xl text-yellow-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Chemical</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.chemical">Chemical</p>
                     </button>
                     <button class="disaster-card p-4 bg-white rounded-lg shadow hover:shadow-lg transition-shadow text-center" data-disaster="tornado">
                         <i class="fas fa-wind text-3xl text-purple-500 mb-2"></i>
-                        <p class="text-sm font-semibold">Tornado</p>
+                        <p class="text-sm font-semibold" data-translate="disasters.tornado">Tornado</p>
                     </button>
                 </div>
             </div>
@@ -139,7 +142,7 @@
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">
                     <i class="fas fa-map text-green-500 mr-2"></i>
-                    Your Area Map
+                    <span data-translate="map.title">Your Area Map</span>
                 </h2>
                 <div id="map" class="h-96 rounded-lg"></div>
                 <div class="mt-4 flex flex-wrap gap-2">
@@ -285,14 +288,14 @@
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-2xl font-bold mb-6 text-gray-800">
                     <i class="fas fa-clipboard-check text-green-500 mr-2"></i>
-                    Emergency Preparedness Checklist
+                    <span data-translate="checklist.title">Emergency Preparedness Checklist</span>
                 </h2>
                 
                 <div class="mb-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold">Your Progress</h3>
+                        <h3 class="text-lg font-semibold" data-translate="checklist.progress">Your Progress</h3>
                         <span class="text-sm text-gray-600">
-                            <span id="checklistProgress">0</span>% Complete
+                            <span id="checklistProgress">0</span>% <span data-translate="checklist.complete">Complete</span>
                         </span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-3">
@@ -305,24 +308,24 @@
                     <div class="checklist-section">
                         <h3 class="text-lg font-semibold mb-3 text-blue-700">
                             <i class="fas fa-first-aid mr-2"></i>
-                            Emergency Supply Kit
+                            <span data-translate="checklist.emergencyKit">Emergency Supply Kit</span>
                         </h3>
                         <div class="space-y-2 ml-6">
                             <label class="flex items-center">
                                 <input type="checkbox" class="checklist-item mr-3">
-                                <span>Water (1 gallon per person per day for 3 days)</span>
+                                <span data-translate="emergencyKit.water">Water (1 gallon per person per day for 3 days)</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" class="checklist-item mr-3">
-                                <span>Non-perishable food (3-day supply)</span>
+                                <span data-translate="emergencyKit.food">Non-perishable food (3-day supply)</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" class="checklist-item mr-3">
-                                <span>Battery-powered or hand-crank radio</span>
+                                <span data-translate="emergencyKit.radio">Battery-powered or hand-crank radio</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" class="checklist-item mr-3">
-                                <span>Flashlight and extra batteries</span>
+                                <span data-translate="emergencyKit.flashlight">Flashlight and extra batteries</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" class="checklist-item mr-3">
@@ -407,7 +410,7 @@
                 <div class="mt-6">
                     <button onclick="location.href='index.html'" 
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
-                        <i class="fas fa-home mr-2"></i> Back to Home
+                        <i class="fas fa-home mr-2"></i> <span data-translate="checklist.backToHome">Back to Home</span>
                     </button>
                 </div>
             </div>

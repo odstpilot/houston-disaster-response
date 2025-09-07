@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Ứng Phó Thảm Họa Houston",
+    "tagline": "Luôn chuẩn bị, an toàn và kết nối"
+  },
+  "navigation": {
+    "language": "VI",
+    "emergency": "Khẩn cấp: 911",
+    "call311": "311",
+    "evacuation": "Tài Nguyên Sơ Tán",
+    "shelters": "Nơi Trú Ẩn",
+    "medical": "Trợ Giúp Y Tế"
+  },
+  "dashboard": {
+    "currentConditions": "Tình Trạng Hiện Tại - Khu Vực Houston",
+    "weatherStatus": "Tình Trạng Thời Tiết",
+    "floodRisk": "Nguy Cơ Lũ Lụt",
+    "airQuality": "Chất Lượng Không Khí",
+    "noActiveWarnings": "Không có cảnh báo nào đang hoạt động",
+    "bayousNormal": "Các sông rạch ở mức bình thường",
+    "disasterPreparedness": "Chuẩn Bị Ứng Phó Thảm Họa"
+  },
+  "disasters": {
+    "hurricane": "Bão",
+    "flooding": "Lũ Lụt",
+    "extremeHeat": "Nắng Nóng Cực Độ",
+    "winterStorm": "Bão Mùa Đông",
+    "chemical": "Hóa Chất",
+    "tornado": "Lốc Xoáy"
+  },
+  "checklist": {
+    "title": "Danh Sách Chuẩn Bị Khẩn Cấp",
+    "progress": "Tiến Độ Của Bạn",
+    "complete": "Hoàn Thành",
+    "emergencyKit": "Bộ Dụng Cụ Khẩn Cấp",
+    "importantDocs": "Tài Liệu Quan Trọng",
+    "homePrep": "Chuẩn Bị Nhà Cửa",
+    "backToHome": "Về Trang Chủ"
+  },
+  "emergencyKit": {
+    "water": "Nước (1 gallon mỗi người mỗi ngày trong 3 ngày)",
+    "food": "Thực phẩm không hư hỏng (đủ 3 ngày)",
+    "radio": "Radio chạy pin hoặc quay tay",
+    "flashlight": "Đèn pin và pin dự phòng",
+    "firstAid": "Hộp sơ cứu",
+    "medications": "Thuốc men (đủ 7 ngày)",
+    "cellPhone": "Điện thoại di động với sạc và pin dự phòng"
+  },
+  "documents": {
+    "insurance": "Hợp đồng bảo hiểm (bản sao hoặc ảnh)",
+    "identification": "Giấy tờ tùy thân",
+    "bankRecords": "Hồ sơ tài khoản ngân hàng",
+    "medicalRecords": "Hồ sơ y tế"
+  },
+  "map": {
+    "title": "Bản Đồ Khu Vực Của Bạn"
+  },
+  "statusValues": {
+    "clear": "quang đãng",
+    "normal": "Bình Thường", 
+    "moderate": "Vừa Phải"
+  }
+}

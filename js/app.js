@@ -3,6 +3,7 @@ class HoustonDisasterApp {
     constructor() {
         this.initialized = false;
         this.modules = {};
+        this.currentTranslations = {};
     }
 
     async initialize() {
@@ -107,6 +108,22 @@ class HoustonDisasterApp {
         // Initialize disaster manager
         if (window.disasterManager) {
             window.disasterManager.initialize();
+        }
+        
+        // Load initial language translations
+        await this.loadInitialLanguage();
+    }
+
+    async loadInitialLanguage() {
+        // Load saved language or default to English
+        const savedLang = localStorage.getItem(CONFIG.STORAGE_KEYS.LANGUAGE) || 'en';
+        await this.loadTranslations(savedLang);
+        
+        // Update language button to show current language  
+        const langBtn = document.getElementById('languageBtn');
+        if (langBtn) {
+            const langCode = CONFIG.LANGUAGES[savedLang] ? savedLang.toUpperCase() : 'EN';
+            langBtn.innerHTML = `<i class="fas fa-language"></i> ${langCode}`;
         }
     }
 
@@ -298,20 +315,68 @@ class HoustonDisasterApp {
     }
 
     async loadTranslations(lang) {
-        // In production, this would load language files
-        console.log(`Loading translations for ${lang}`);
-        
-        // Show notification
-        const langName = CONFIG.LANGUAGES[lang];
-        if (window.notificationManager) {
-            window.notificationManager.createAlert({
-                type: 'info',
-                severity: 'info',
-                title: 'Language Changed',
-                message: `Interface language set to ${langName}`,
-                expires: Date.now() + 5000
-            });
+        try {
+            // Load translation file
+            const response = await fetch(`./translations/${lang}.json`);
+            if (!response.ok) {
+                console.warn(`Translation file for ${lang} not found, falling back to English`);
+                if (lang !== 'en') {
+                    return this.loadTranslations('en');
+                }
+                return;
+            }
+            
+            const translations = await response.json();
+            this.currentTranslations = translations;
+            
+            // Apply translations to the page
+            this.applyTranslations(translations);
+            
+            // Show notification
+            const langName = CONFIG.LANGUAGES[lang];
+            if (window.notificationManager) {
+                window.notificationManager.createAlert({
+                    type: 'info',
+                    severity: 'info',
+                    title: 'Language Changed',
+                    message: `Interface language set to ${langName}`,
+                    expires: Date.now() + 5000
+                });
+            }
+            
+        } catch (error) {
+            console.error('Error loading translations:', error);
         }
+    }
+
+    applyTranslations(translations) {
+        // Apply translations to elements with data-translate attribute
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            const translatedText = this.getNestedTranslation(translations, key);
+            if (translatedText) {
+                if (element.tagName === 'INPUT' && element.type === 'submit') {
+                    element.value = translatedText;
+                } else if (element.hasAttribute('placeholder')) {
+                    element.placeholder = translatedText;
+                } else {
+                    element.textContent = translatedText;
+                }
+            }
+        });
+
+        // Apply translations to elements with data-translate-html (for HTML content)
+        document.querySelectorAll('[data-translate-html]').forEach(element => {
+            const key = element.getAttribute('data-translate-html');
+            const translatedText = this.getNestedTranslation(translations, key);
+            if (translatedText) {
+                element.innerHTML = translatedText;
+            }
+        });
+    }
+
+    getNestedTranslation(translations, key) {
+        return key.split('.').reduce((obj, k) => obj && obj[k], translations);
     }
 
     setupInstallPrompt() {

@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "休斯顿灾难应对",
+    "tagline": "保持准备，保持安全，保持联系"
+  },
+  "navigation": {
+    "language": "中文",
+    "emergency": "紧急情况：911",
+    "call311": "311",
+    "evacuation": "疏散资源",
+    "shelters": "避难所",
+    "medical": "医疗帮助"
+  },
+  "dashboard": {
+    "currentConditions": "当前状况 - 休斯顿地区",
+    "weatherStatus": "天气状况",
+    "floodRisk": "洪水风险",
+    "airQuality": "空气质量",
+    "noActiveWarnings": "无活跃警告",
+    "bayousNormal": "河流处于正常水位",
+    "disasterPreparedness": "灾难准备"
+  },
+  "disasters": {
+    "hurricane": "飓风",
+    "flooding": "洪水",
+    "extremeHeat": "极端高温",
+    "winterStorm": "冬季风暴",
+    "chemical": "化学品",
+    "tornado": "龙卷风"
+  },
+  "checklist": {
+    "title": "紧急准备清单",
+    "progress": "您的进度",
+    "complete": "完成",
+    "emergencyKit": "紧急用品包",
+    "importantDocs": "重要文件",
+    "homePrep": "家庭准备",
+    "backToHome": "返回首页"
+  },
+  "emergencyKit": {
+    "water": "水（每人每天1加仑，持续3天）",
+    "food": "不易腐烂的食物（3天供应量）",
+    "radio": "电池或手摇收音机",
+    "flashlight": "手电筒和额外电池",
+    "firstAid": "急救包",
+    "medications": "药物（7天供应量）",
+    "cellPhone": "手机配充电器和备用电池"
+  },
+  "documents": {
+    "insurance": "保险单（复印件或照片）",
+    "identification": "身份证件",
+    "bankRecords": "银行账户记录",
+    "medicalRecords": "医疗记录"
+  },
+  "map": {
+    "title": "您的区域地图"
+  },
+  "statusValues": {
+    "clear": "晴朗",
+    "normal": "正常",
+    "moderate": "中等"
+  }
+}
