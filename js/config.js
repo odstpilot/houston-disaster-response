@@ -180,5 +180,31 @@ const CONFIG = {
     }
 };
 
-// Freeze the configuration to prevent modifications
-Object.freeze(CONFIG);
+// Initialize configuration when secure environment is ready
+function initializeConfig() {
+    console.log('🔧 Initializing configuration with secure environment');
+    
+    // Update the API key with the secure value
+    if (window.ENV && window.ENV.GOOGLE_MAPS_API_KEY) {
+        CONFIG.GOOGLE_MAPS.API_KEY = window.ENV.GOOGLE_MAPS_API_KEY;
+        console.log('✅ Google Maps API key loaded securely');
+    } else {
+        console.warn('⚠️  Google Maps API key not found in environment');
+    }
+    
+    // Freeze the configuration to prevent modifications
+    Object.freeze(CONFIG);
+    
+    // Notify that config is ready
+    window.dispatchEvent(new CustomEvent('configReady', { detail: CONFIG }));
+}
+
+// Listen for environment configuration to be ready
+window.addEventListener('envConfigReady', () => {
+    initializeConfig();
+});
+
+// If environment is already ready, initialize immediately
+if (window.ENV) {
+    initializeConfig();
+}

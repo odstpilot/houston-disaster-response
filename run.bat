@@ -4,13 +4,30 @@ echo.
 echo Trying different methods to start a local server:
 echo.
 
-REM Try Python first (most common)
+REM Try Python first with our secure server
 python --version >nul 2>&1
 if %errorlevel%==0 (
-    echo [1/3] Found Python - Starting server on http://localhost:8000
+    echo [1/4] Found Python - Starting SECURE server on http://localhost:8000
+    echo.
+    echo ^> python server.py
+    echo.
+    echo Press Ctrl+C to stop the server
+    echo Open your browser to: http://localhost:8000
+    echo.
+    echo 🔐 Using secure server with environment variable protection
+    echo.
+    python server.py
+    goto :end
+)
+
+REM Fallback to simple Python HTTP server
+python --version >nul 2>&1
+if %errorlevel%==0 (
+    echo [2/4] Fallback - Starting basic Python server on http://localhost:8000
     echo.
     echo ^> python -m http.server 8000
     echo.
+    echo ⚠️  WARNING: Using basic server - API keys may be exposed!
     echo Press Ctrl+C to stop the server
     echo Open your browser to: http://localhost:8000
     echo.
@@ -21,10 +38,11 @@ if %errorlevel%==0 (
 REM Try Node.js
 node --version >nul 2>&1
 if %errorlevel%==0 (
-    echo [2/3] Found Node.js - Starting server on http://localhost:8000
+    echo [3/4] Found Node.js - Starting server on http://localhost:8000
     echo.
     echo ^> npx http-server -p 8000 -c-1
     echo.
+    echo ⚠️  WARNING: Using basic server - API keys may be exposed!
     echo Press Ctrl+C to stop the server
     echo Open your browser to: http://localhost:8000
     echo.
@@ -35,10 +53,11 @@ if %errorlevel%==0 (
 REM Try PHP
 php --version >nul 2>&1
 if %errorlevel%==0 (
-    echo [3/3] Found PHP - Starting server on http://localhost:8000
+    echo [4/4] Found PHP - Starting server on http://localhost:8000
     echo.
     echo ^> php -S localhost:8000
     echo.
+    echo ⚠️  WARNING: Using basic server - API keys may be exposed!
     echo Press Ctrl+C to stop the server
     echo Open your browser to: http://localhost:8000
     echo.

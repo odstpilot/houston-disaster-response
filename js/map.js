@@ -12,10 +12,37 @@ class DisasterMap {
         this.directionsService = null;
         this.directionsRenderer = null;
         this.isLoaded = false;
+        this.configReady = false;
+        
+        // Wait for configuration to be ready before initializing
+        this.waitForConfig();
+    }
+
+    waitForConfig() {
+        if (window.CONFIG && window.CONFIG.GOOGLE_MAPS) {
+            this.configReady = true;
+            console.log('🗺️  Configuration ready for Google Maps');
+        } else {
+            // Listen for config ready event
+            window.addEventListener('configReady', () => {
+                this.configReady = true;
+                console.log('🗺️  Configuration loaded for Google Maps');
+            });
+        }
     }
 
     async initialize() {
         try {
+            // Wait for configuration to be ready
+            await this.waitForConfigReady();
+            
+            // Validate API key
+            if (!CONFIG.GOOGLE_MAPS.API_KEY || CONFIG.GOOGLE_MAPS.API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY') {
+                console.error('❌ Invalid Google Maps API key');
+                this.showMapError('Invalid or missing Google Maps API key. Please check your configuration.');
+                return;
+            }
+
             // Load Google Maps API dynamically
             await this.loadGoogleMapsAPI();
             
@@ -36,6 +63,14 @@ class DisasterMap {
             console.error('Failed to initialize Google Maps:', error);
             this.showMapError();
         }
+    }
+
+    async waitForConfigReady() {
+        // Wait for configuration to be ready
+        while (!this.configReady) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        console.log('✅ Configuration ready for Google Maps initialization');
     }
 
     async loadGoogleMapsAPI() {
@@ -761,11 +796,20 @@ class DisasterMap {
         console.log('Map clicked at:', event.latLng.toJSON());
     }
 
-    showMapError() {
+    showMapError(customMessage = null) {
         const mapContainer = document.getElementById('map');
         if (mapContainer) {
-            const apiKey = CONFIG.GOOGLE_MAPS.API_KEY;
+            const apiKey = CONFIG?.GOOGLE_MAPS?.API_KEY || 'Not available';
             const isValidKey = apiKey && apiKey !== 'YOUR_GOOGLE_MAPS_API_KEY' && apiKey.length > 10;
+            
+            let errorMessage;
+            if (customMessage) {
+                errorMessage = customMessage;
+            } else if (!isValidKey) {
+                errorMessage = 'Invalid or missing Google Maps API key. Please check your configuration.';
+            } else {
+                errorMessage = 'Unable to load Google Maps. Please check your internet connection and API key restrictions.';
+            }
             
             mapContainer.innerHTML = `
                 <div class="h-full flex items-center justify-center bg-gray-100">
@@ -773,10 +817,7 @@ class DisasterMap {
                         <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
                         <h3 class="text-lg font-semibold text-gray-800 mb-2">Map Loading Error</h3>
                         <p class="text-sm text-gray-600 mb-4">
-                            ${!isValidKey ? 
-                                'Invalid or missing Google Maps API key. Please check your configuration.' :
-                                'Unable to load Google Maps. Please check your internet connection and API key restrictions.'
-                            }
+                            ${errorMessage}
                         </p>
                         <div class="text-xs text-gray-500 mb-4">
                             API Key: ${apiKey ? apiKey.substring(0, 10) + '...' : 'Not found'}
