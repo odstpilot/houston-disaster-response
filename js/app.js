@@ -125,6 +125,9 @@ class HoustonDisasterApp {
         
         // Accessibility controls
         this.setupAccessibilityControls();
+        
+        // Quick action buttons
+        this.setupQuickActionButtons();
     }
 
     setupNavigation() {
@@ -142,6 +145,34 @@ class HoustonDisasterApp {
                 this.showView('checklistView');
             });
         });
+    }
+
+    setupQuickActionButtons() {
+        // 311 Info button - intelligent redirection
+        const info311Btn = document.getElementById('info311Btn');
+        if (info311Btn) {
+            info311Btn.addEventListener('click', () => {
+                // Check if device is mobile
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                               ('ontouchstart' in window && window.innerWidth <= 768);
+                
+                if (isMobile) {
+                    // On mobile, dial 311
+                    window.location.href = 'tel:311';
+                } else {
+                    // On desktop, open Houston 311 website
+                    window.open('https://www.houstontx.gov/311/', '_blank');
+                }
+            });
+        }
+
+        // Emergency 911 button
+        const emergency911Btn = document.getElementById('emergency911Btn');
+        if (emergency911Btn) {
+            emergency911Btn.addEventListener('click', () => {
+                window.location.href = 'tel:911';
+            });
+        }
     }
 
     navigateToView(index) {
