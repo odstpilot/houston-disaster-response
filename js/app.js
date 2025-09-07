@@ -30,6 +30,10 @@ class HoustonDisasterApp {
         
         // Load initial data
         await this.loadInitialData();
+
+        // Update evacuation status
+        this.updateEvacuationStatus();
+        setInterval(() => this.updateEvacuationStatus(), 60000); // Update every minute
         
         this.initialized = true;
         console.log('App initialization complete');
@@ -49,23 +53,27 @@ class HoustonDisasterApp {
             .map(([name]) => name);
         
         if (unsupported.length > 0) {
-            console.warn('Unsupported features:', unsupported);
-            this.showCompatibilityWarning(unsupported);
+            console.warn(`Browser does not support: ${unsupported.join(', ')}`);
         }
     }
 
-    showCompatibilityWarning(unsupported) {
-        const warning = document.createElement('div');
-        warning.className = 'bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4';
-        warning.innerHTML = `
-            <strong>Browser Compatibility Warning:</strong>
-            Some features may not work properly. Missing: ${unsupported.join(', ')}
-        `;
-        
-        const main = document.querySelector('main');
-        if (main) {
-            main.insertBefore(warning, main.firstChild);
-        }
+    async updateEvacuationStatus() {
+        const evacuationStatusEl = document.getElementById('evacuationStatus');
+        if (!evacuationStatusEl) return;
+
+        // In a real application, this would come from a live API feed (e.g., from Houston's Office of Emergency Management)
+        const statuses = [
+            { status: 'CLEAR', text: 'Routes Clear', color: 'bg-green-500' },
+            { status: 'WATCH', text: 'Watch', color: 'bg-yellow-500' },
+            { status: 'VOLUNTARY', text: 'Voluntary', color: 'bg-orange-500' },
+            { status: 'MANDATORY', text: 'Mandatory', color: 'bg-red-700' }
+        ];
+
+        // Simulate getting a status
+        const currentStatus = statuses[Math.floor(Math.random() * statuses.length)];
+
+        evacuationStatusEl.textContent = currentStatus.text;
+        evacuationStatusEl.className = `ml-2 text-xs px-2 py-1 rounded-full text-white ${currentStatus.color}`;
     }
 
     async initializeModules() {
