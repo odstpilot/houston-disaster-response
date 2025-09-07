@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Resources - Houston Disaster Response</title>
+    <meta name="description" content="Comprehensive list of hospitals and emergency medical facilities in the Greater Houston area">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Main Navigation -->
+    <nav class="bg-blue-900 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <i class="fas fa-shield-alt text-2xl mr-3"></i>
+                        <h1 class="text-xl font-bold">Houston Disaster Response</h1>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-3xl font-bold mb-4 text-blue-900">Medical Resources - Greater Houston Area</h2>
+            <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-red-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-red-700">
+                            <strong>Emergency:</strong> For life-threatening emergencies, call <strong>911</strong> immediately. All hospitals listed are 24/7 unless noted. During disasters, call ahead to confirm availability and services.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Emergency Contacts -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Emergency Medical Contacts</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="medical-card bg-red-50 border-red-200">
+                        <h4 class="font-bold text-lg text-red-800">Life-Threatening Emergency</h4>
+                        <p class="text-gray-700">Immediate medical emergency requiring ambulance</p>
+                        <a href="tel:911" class="contact-link text-red-600"><i class="fas fa-phone-alt mr-2"></i>Call 911</a>
+                    </div>
+                    <div class="medical-card bg-blue-50 border-blue-200">
+                        <h4 class="font-bold text-lg text-blue-800">Poison Control Center</h4>
+                        <p class="text-gray-700">24/7 poisoning emergencies and information</p>
+                        <a href="tel:1-800-222-1222" class="contact-link text-blue-600"><i class="fas fa-phone-alt mr-2"></i>1-800-222-1222</a>
+                    </div>
+                    <div class="medical-card bg-green-50 border-green-200">
+                        <h4 class="font-bold text-lg text-green-800">Mental Health Crisis</h4>
+                        <p class="text-gray-700">Crisis support and mental health emergencies</p>
+                        <a href="tel:988" class="contact-link text-green-600"><i class="fas fa-phone-alt mr-2"></i>Call 988</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level 1 Trauma Centers -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Level 1 Trauma Centers</h3>
+                <p class="text-gray-600 mb-4">The highest level of trauma care, equipped to handle the most severe injuries and emergencies.</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Memorial Hermann-Texas Medical Center <span class="text-sm text-red-600 font-normal">(Level 1 Trauma)</span></h4>
+                        <p class="text-gray-700">Major trauma center serving the greater Houston area with comprehensive emergency services.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>6411 Fannin St, Houston, TX 77030</p>
+                        <a href="tel:713-704-4000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 704-4000</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Ben Taub General Hospital <span class="text-sm text-red-600 font-normal">(Level 1 Trauma)</span></h4>
+                        <p class="text-gray-700">Harris Health System's flagship hospital with comprehensive trauma and emergency care.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>1504 Taub Loop, Houston, TX 77030</p>
+                        <a href="tel:713-873-2000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 873-2000</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Major Medical Centers -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Major Medical Centers</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Houston Methodist Hospital</h4>
+                        <p class="text-gray-700">Flagship hospital of the Methodist system with comprehensive services and emergency care.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>6565 Fannin St, Houston, TX 77030</p>
+                        <a href="tel:713-790-3311" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 790-3311</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Texas Children's Hospital <span class="text-sm text-purple-600 font-normal">(Pediatric)</span></h4>
+                        <p class="text-gray-700">Premier pediatric hospital providing specialized care for children and adolescents.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>6621 Fannin St, Houston, TX 77030</p>
+                        <a href="tel:832-824-1000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(832) 824-1000</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">MD Anderson Cancer Center</h4>
+                        <p class="text-gray-700">World-renowned cancer treatment and research center with emergency oncology services.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>1515 Holcombe Blvd, Houston, TX 77030</p>
+                        <a href="tel:713-792-2121" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 792-2121</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Baylor St. Luke's Medical Center</h4>
+                        <p class="text-gray-700">Major teaching hospital with comprehensive emergency and specialty services.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>6720 Bertner Ave, Houston, TX 77030</p>
+                        <a href="tel:832-355-1000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(832) 355-1000</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Hospitals -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Community Hospitals</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Memorial Hermann Northwest</h4>
+                        <p class="text-gray-700">Full-service hospital serving northwest Harris County.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>1635 N Loop W, Houston, TX 77008</p>
+                        <a href="tel:713-867-3380" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 867-3380</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Memorial Hermann Southwest</h4>
+                        <p class="text-gray-700">Community hospital serving southwest Houston area.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>7600 Beechnut St, Houston, TX 77074</p>
+                        <a href="tel:713-456-5000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 456-5000</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Houston Methodist Clear Lake</h4>
+                        <p class="text-gray-700">Serving the Clear Lake and Bay Area communities.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>18300 Houston Methodist Dr, Nassau Bay, TX 77058</p>
+                        <a href="tel:281-333-5503" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(281) 333-5503</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Houston Methodist Sugar Land</h4>
+                        <p class="text-gray-700">Full-service hospital serving Fort Bend County.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>16655 Southwest Fwy, Sugar Land, TX 77479</p>
+                        <a href="tel:281-274-7000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(281) 274-7000</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mental Health Facilities -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Mental Health & Behavioral Services</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Harris Center for Mental Health</h4>
+                        <p class="text-gray-700">Comprehensive mental health services and crisis intervention.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>9401 Southwest Fwy, Houston, TX 77074</p>
+                        <a href="tel:713-970-7000" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 970-7000</a>
+                        <a href="tel:713-970-7001" class="contact-link text-red-600"><i class="fas fa-phone-alt mr-2"></i>Crisis Line: (713) 970-7001</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Memorial Hermann Behavioral Health</h4>
+                        <p class="text-gray-700">Inpatient and outpatient behavioral health services.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-map-marker-alt mr-1"></i>3043 Gessner Rd, Houston, TX 77080</p>
+                        <a href="tel:713-867-2500" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 867-2500</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent Care Centers -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Urgent Care Centers</h3>
+                <p class="text-gray-600 mb-4">For non-life-threatening urgent medical needs. Generally faster than emergency rooms for minor injuries and illnesses.</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Memorial Hermann Urgent Care</h4>
+                        <p class="text-gray-700">Multiple locations throughout Greater Houston area.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-clock mr-1"></i>Most locations: 8am-8pm daily</p>
+                        <a href="tel:713-222-2273" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 222-2273</a>
+                        <a href="https://memorialhermann.org/services/emergency-care/urgent-care-locations" target="_blank" class="contact-link"><i class="fas fa-globe mr-2"></i>Find Locations</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Houston Methodist Urgent Care</h4>
+                        <p class="text-gray-700">Convenient urgent care locations across the Houston metro area.</p>
+                        <p class="text-sm text-gray-600 mt-2"><i class="fas fa-clock mr-1"></i>Hours vary by location</p>
+                        <a href="tel:713-394-6677" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 394-6677</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Resources -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-semibold mb-3 text-blue-800 border-b-2 pb-2">Additional Medical Resources</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Texas Medical Center</h4>
+                        <p class="text-gray-700">Information hub for the world's largest medical complex.</p>
+                        <a href="https://www.tmc.edu" target="_blank" class="contact-link"><i class="fas fa-globe mr-2"></i>TMC Emergency Updates</a>
+                    </div>
+                    <div class="medical-card">
+                        <h4 class="font-bold text-xl text-blue-900">Harris Health System</h4>
+                        <p class="text-gray-700">Safety-net healthcare provider serving Harris County.</p>
+                        <a href="tel:713-566-6400" class="contact-link"><i class="fas fa-phone-alt mr-2"></i>(713) 566-6400</a>
+                        <a href="https://www.harrishealth.org" target="_blank" class="contact-link"><i class="fas fa-globe mr-2"></i>Emergency Status</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="bg-blue-100 border-l-4 border-blue-500 p-4">
+                <h4 class="font-bold text-lg text-blue-800 mb-2">Important Notes During Disasters:</h4>
+                <ul class="text-sm text-blue-700 list-disc list-inside space-y-1">
+                    <li>Hospital availability can change during severe weather events</li>
+                    <li>Call ahead to confirm services and accessibility</li>
+                    <li>Monitor local emergency alerts for hospital status updates</li>
+                    <li>Emergency departments may have extended wait times during disasters</li>
+                    <li>Bring identification, insurance cards, and current medications if possible</li>
+                    <li>For non-urgent care, consider urgent care centers or telehealth options</li>
+                </ul>
+            </div>
+
+        </div>
+    </main>
+
+    <style>
+        .medical-card {
+            background-color: #f9fafb;
+            border-left: 5px solid #3b82f6;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+        }
+        .medical-card.bg-red-50 {
+            border-left-color: #dc2626;
+        }
+        .medical-card.bg-blue-50 {
+            border-left-color: #2563eb;
+        }
+        .medical-card.bg-green-50 {
+            border-left-color: #16a34a;
+        }
+        .contact-link {
+            display: block;
+            margin-top: 0.5rem;
+            color: #2563eb;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .contact-link:hover {
+            color: #1d4ed8;
+        }
+        .contact-link.text-red-600 {
+            color: #dc2626;
+        }
+        .contact-link.text-red-600:hover {
+            color: #b91c1c;
+        }
+        .contact-link.text-blue-600 {
+            color: #2563eb;
+        }
+        .contact-link.text-green-600 {
+            color: #16a34a;
+        }
+    </style>
+
+</body>
+</html>
