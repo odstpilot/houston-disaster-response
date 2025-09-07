@@ -78,6 +78,12 @@ class HoustonDisasterApp {
     }
 
     async initializeModules() {
+        // Initialize intelligent chat service
+        if (typeof IntelligentChatService !== 'undefined') {
+            console.log('🤖 Initializing Intelligent Chat Service...');
+            window.intelligentChatService = new IntelligentChatService();
+        }
+        
         // Initialize map
         if (document.getElementById('map')) {
             this.modules.map = new DisasterMap();

@@ -4,34 +4,69 @@ class IntelligentChatService {
         this.mistralApiKey = null;
         this.tavilyApiKey = null;
         this.conversationHistory = [];
-        this.loadApiKeys();
+        this.envReady = false;
+        
+        // Wait for environment to be ready
+        this.waitForEnvironment();
+    }
+
+    async waitForEnvironment() {
+        if (window.ENV && window.ENV.MISTRAL_API_KEY) {
+            this.loadApiKeys();
+            return;
+        }
+        
+        // Listen for environment ready event
+        window.addEventListener('envConfigReady', () => {
+            console.log('🤖 Environment ready for intelligent chat');
+            this.loadApiKeys();
+        });
     }
 
     async loadApiKeys() {
         try {
+            // Wait for environment if not ready
+            if (!window.ENV && window.secureEnvLoader) {
+                await window.secureEnvLoader.waitForConfig();
+            }
+            
             // Load API keys from environment
             if (window.ENV) {
                 this.mistralApiKey = window.ENV.MISTRAL_API_KEY;
                 this.tavilyApiKey = window.ENV.TAVILY_API_KEY;
+                this.envReady = true;
+                
+                console.log('🔑 API Keys loaded for intelligent chat:', {
+                    mistral: this.mistralApiKey ? '✅ Available' : '❌ Missing',
+                    tavily: this.tavilyApiKey ? '✅ Available' : '❌ Missing'
+                });
             }
             
             if (!this.mistralApiKey) {
-                console.warn('Mistral API key not found. AI chat will use fallback responses.');
+                console.warn('⚠️  Mistral API key not found. AI chat will use fallback responses.');
             }
             
             if (!this.tavilyApiKey) {
-                console.warn('Tavily API key not found. Real-time search will be limited.');
+                console.warn('⚠️  Tavily API key not found. Real-time search will be limited.');
             }
         } catch (error) {
-            console.error('Error loading API keys:', error);
+            console.error('❌ Error loading API keys:', error);
         }
     }
 
     async generateResponse(userMessage, context = {}) {
         console.log('🤖 Intelligent Chat Service called with:', userMessage);
+        
+        // Ensure environment is loaded
+        if (!this.envReady) {
+            console.log('⏳ Waiting for environment to be ready...');
+            await this.loadApiKeys();
+        }
+        
         console.log('🔑 API Keys status:', {
             mistral: this.mistralApiKey ? 'Available' : 'Missing',
-            tavily: this.tavilyApiKey ? 'Available' : 'Missing'
+            tavily: this.tavilyApiKey ? 'Available' : 'Missing',
+            envReady: this.envReady
         });
         
         try {
@@ -63,18 +98,26 @@ class IntelligentChatService {
             'current', 'latest', 'recent', 'today', 'now', 'live', 'active',
             'weather', 'forecast', 'warning', 'alert', 'evacuation',
             'road', 'traffic', 'closure', 'flood', 'hurricane', 'storm',
-            'news', 'update', 'report', 'status'
+            'news', 'update', 'report', 'status', 'what', 'who', 'when', 'where'
         ];
         
         const lowerMessage = message.toLowerCase();
-        return realTimeKeywords.some(keyword => lowerMessage.includes(keyword));
+        return realTimeKeywords.some(keyword => lowerMessage.includes(keyword)) || 
+               message.includes('?'); // Any question might benefit from real-time search
     }
 
     async searchWithTavily(query) {
-        if (!this.tavilyApiKey) return null;
+        if (!this.tavilyApiKey) {
+            console.warn('⚠️  Tavily API key not available - skipping search');
+            return null;
+        }
 
         try {
+            console.log('🔍 Starting Tavily search for:', query);
+            
             const searchQuery = this.buildSearchQuery(query);
+            console.log('🔍 Enhanced search query:', searchQuery);
+            
             const response = await fetch('https://api.tavily.com/search', {
                 method: 'POST',
                 headers: {
@@ -85,34 +128,47 @@ class IntelligentChatService {
                     query: searchQuery,
                     search_depth: 'basic',
                     include_answer: true,
-                    include_domains: [
-                        'weather.gov',
-                        'nhc.noaa.gov',
-                        'harriscountyfws.org',
-                        'hcfcd.org',
-                        'houstonemergency.org',
-                        'ready.gov',
-                        'fema.gov'
-                    ],
-                    max_results: 5
+                    include_raw_content: true,
+                    max_results: 5,
+                    // Remove domain restrictions for better general search
+                    // include_domains: [] // Allow all domains for better coverage
                 })
             });
 
+            console.log('🔍 Tavily API response status:', response.status);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('✅ Tavily search results:', {
+                    answer: data.answer ? 'Found' : 'None',
+                    results_count: data.results?.length || 0
+                });
                 return data;
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Tavily API error:', response.status, errorText);
+                return null;
             }
         } catch (error) {
-            console.error('Tavily search error:', error);
+            console.error('❌ Tavily search error:', error);
+            return null;
         }
-        
-        return null;
     }
 
     buildSearchQuery(userMessage) {
-        // Enhance user query with Houston-specific context
-        const houstonContext = 'Houston Texas disaster emergency preparedness';
-        return `${userMessage} ${houstonContext}`;
+        // Check if the message is disaster/Houston related
+        const houstonKeywords = ['houston', 'harris county', 'texas', 'hurricane', 'flood', 'disaster', 'emergency'];
+        const lowerMessage = userMessage.toLowerCase();
+        const isHoustonRelated = houstonKeywords.some(keyword => lowerMessage.includes(keyword));
+        
+        if (isHoustonRelated) {
+            // Enhance with Houston-specific context for local queries
+            const houstonContext = 'Houston Texas disaster emergency preparedness';
+            return `${userMessage} ${houstonContext}`;
+        } else {
+            // For general queries, search as-is to get current information
+            return userMessage;
+        }
     }
 
     async generateMistralResponse(userMessage, context, searchResults) {
@@ -178,6 +234,8 @@ Key responsibilities:
 - Stay calm and reassuring while being informative
 - Use clear, simple language accessible to all education levels
 
+IMPORTANT: If the user asks about non-disaster topics, you can provide general information but always try to connect it back to emergency preparedness or Houston context when relevant.
+
 Houston-specific context:
 - Hurricane season: June-November (peak: August-October)
 - Major flood risk areas: downtown, bayou areas, coastal regions
@@ -187,16 +245,17 @@ Houston-specific context:
 - Key agencies: Harris County Office of Emergency Management, Houston Emergency Management
 
 Response guidelines:
-- Keep responses under 200 words for chat interface
-- Provide specific, actionable steps
+- Keep responses conversational and informative
+- Provide specific, actionable steps when discussing disasters
 - Include relevant phone numbers when appropriate
 - Mention local resources and programs when relevant
-- If unsure about current conditions, recommend official sources`;
+- If unsure about current conditions, recommend official sources
+- For general questions, provide accurate information and relate to emergency preparedness when possible`;
 
         if (searchResults && searchResults.results) {
-            prompt += `\n\nCurrent real-time information:\n`;
+            prompt += `\n\nCurrent real-time information from search:\n`;
             searchResults.results.forEach(result => {
-                prompt += `- ${result.title}: ${result.content}\n`;
+                prompt += `- ${result.title}: ${result.content.substring(0, 200)}...\n`;
             });
             
             if (searchResults.answer) {
