@@ -131,24 +131,68 @@ class ChatAssistant {
     }
 
     formatMessage(message) {
-        // Convert URLs to links
-        message = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="underline">$1</a>');
+        // Parse markdown syntax
+        message = this.parseMarkdown(message);
+        
+        // Convert URLs to links (if not already converted by markdown)
+        message = message.replace(/(?<!href="|>)(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" class="text-blue-600 hover:text-blue-800 underline">$1</a>');
         
         // Convert phone numbers to tel links
         message = message.replace(/(\d{3}-\d{3}-\d{4}|\d{3}-\d{4}|\d{1}-\d{3}-\d{3}-\d{4})/g, 
-            '<a href="tel:$1" class="underline">$1</a>');
+            '<a href="tel:$1" class="text-blue-600 hover:text-blue-800 underline">$1</a>');
         
-        // Bold important keywords
+        // Bold important keywords (if not already formatted)
         const keywords = ['emergency', 'evacuate', 'warning', 'danger', 'immediately', 'urgent'];
         keywords.forEach(keyword => {
-            const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
-            message = message.replace(regex, '<strong>$&</strong>');
+            const regex = new RegExp(`(?<!<[^>]*>)\\b${keyword}\\b(?![^<]*>)`, 'gi');
+            message = message.replace(regex, '<strong class="text-red-600 font-bold">$&</strong>');
         });
         
-        // Convert line breaks
-        message = message.replace(/\n/g, '<br>');
-        
         return message;
+    }
+
+    parseMarkdown(text) {
+        // Handle headers
+        text = text.replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-gray-800 mt-4 mb-2">$1</h3>');
+        text = text.replace(/^## (.*$)/gim, '<h2 class="text-xl font-semibold text-gray-800 mt-4 mb-2">$1</h2>');
+        text = text.replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-gray-800 mt-4 mb-2">$1</h1>');
+        
+        // Handle bold and italic
+        text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-bold"><em class="italic">$1</em></strong>');
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
+        text = text.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+        
+        // Handle code blocks and inline code
+        text = text.replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-100 p-3 rounded-lg my-2 overflow-x-auto"><code class="text-sm font-mono">$1</code></pre>');
+        text = text.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm font-mono">$1</code>');
+        
+        // Handle unordered lists
+        text = text.replace(/^\s*[\*\-\+]\s+(.*)$/gim, '<li class="ml-4 mb-1">• $1</li>');
+        text = text.replace(/(<li.*<\/li>)/s, '<ul class="my-2">$1</ul>');
+        text = text.replace(/<\/li>\s*<ul class="my-2"><li/g, '</li><li');
+        text = text.replace(/<\/ul>\s*<ul class="my-2">/g, '');
+        
+        // Handle ordered lists
+        text = text.replace(/^\s*\d+\.\s+(.*)$/gim, '<li class="ml-4 mb-1">$1</li>');
+        // Note: This is a simplified approach. For more complex lists, consider a proper markdown parser
+        
+        // Handle line breaks
+        text = text.replace(/\n\n/g, '</p><p class="mb-2">');
+        text = text.replace(/\n/g, '<br>');
+        
+        // Wrap in paragraphs if not already wrapped
+        if (!text.includes('<h1') && !text.includes('<h2') && !text.includes('<h3') && 
+            !text.includes('<ul') && !text.includes('<ol') && !text.includes('<pre')) {
+            text = '<p class="mb-2">' + text + '</p>';
+        }
+        
+        // Handle blockquotes
+        text = text.replace(/^>\s+(.*)$/gim, '<blockquote class="border-l-4 border-blue-300 pl-4 py-2 my-2 bg-blue-50 italic">$1</blockquote>');
+        
+        // Handle horizontal rules
+        text = text.replace(/^---$/gim, '<hr class="border-gray-300 my-4">');
+        
+        return text;
     }
 
     showTypingIndicator() {
