@@ -49,8 +49,9 @@ class DisasterResponseHandler(http.server.SimpleHTTPRequestHandler):
             # Only expose specific environment variables that are safe for client-side
             safe_config = {
                 'GOOGLE_MAPS_API_KEY': self.env_vars.get('GOOGLE_MAPS_API_KEY', ''),
-                'MISTRAL_API_KEY': self.env_vars.get('MISTRAL_API_KEY', ''),
-                'TAVILY_API_KEY': self.env_vars.get('TAVILY_API_KEY', '')
+                # Do not expose server-only keys to the client
+                'MISTRAL_API_KEY': '',
+                'TAVILY_API_KEY': ''
             }
             
             self.send_response(200)

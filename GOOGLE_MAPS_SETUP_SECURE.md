@@ -33,7 +33,7 @@ This application now uses **secure server-side API key management** to protect y
 1. Open the `.env` file in your project root
 2. Replace `YOUR_GOOGLE_MAPS_API_KEY` with your actual API key:
    ```
-   GOOGLE_MAPS_API_KEY=AIzaSyBqD4_uvapoL5DtaVI_6M57tneG131Rsvw
+   GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
    ```
 
 ### 4. Start the Secure Server

@@ -77,12 +77,12 @@ class SecureEnvLoader {
     }
 
     getFallbackConfig() {
-        // Fallback configuration (less secure - should be replaced with server config)
-        console.warn('🚨 Using fallback configuration - API keys exposed on client side');
+        // Fallback configuration without any embedded secrets
+        console.warn('🚨 Using fallback configuration - no API keys embedded');
         return {
-            GOOGLE_MAPS_API_KEY: 'YOUR_GOOGLE_MAPS_API_KEY', // This should be replaced with actual key
-            MISTRAL_API_KEY: '6EaGM4ijaFF2pu4CxMMH4iSPwle4Vcpk',
-            TAVILY_API_KEY: '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',
+            GOOGLE_MAPS_API_KEY: '',
+            MISTRAL_API_KEY: '',
+            TAVILY_API_KEY: '',
             APP_ENV: 'development',
             DEBUG_MODE: 'true'
         };

@@ -34,11 +34,9 @@ php -S localhost:8000
 
 ## 🗺️ **Your Google Maps API Key**
 
-Your API key is already configured in both methods:
-- **Server method**: Uses `.env` file and `js/env-config.js`
-- **Standalone method**: Embedded in `index-standalone.html`
-
-**Current key:** `AIzaSyBqD4_uvapoL5DtaVI_6M57tneG131Rsvw`
+Your API key should NOT be embedded in public files.
+- **Server method**: Set in `.env` and served via `/api/config`.
+- **Standalone method**: Requires running the secure server; keys are not embedded.
 
 ---
 

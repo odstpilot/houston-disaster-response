@@ -19,15 +19,14 @@
 
     <!-- Inline Environment Config for Standalone Mode -->
     <script>
-        // Standalone Environment Configuration
-        // Replace YOUR_GOOGLE_MAPS_API_KEY with your actual API key
+        // Standalone Environment Configuration (no public keys)
         window.ENV = {
-            GOOGLE_MAPS_API_KEY: 'AIzaSyBqD4_uvapoL5DtaVI_6M57tneG131Rsvw',
+            GOOGLE_MAPS_API_KEY: '',
             OPENAI_API_KEY: '',
             APP_ENV: 'development',
             DEBUG_MODE: 'true'
         };
-        console.log('Standalone mode - API key loaded:', window.ENV.GOOGLE_MAPS_API_KEY.substring(0, 10) + '...');
+        console.warn('Standalone mode: No API keys embedded. Use .env with server.');
     </script>
 </head>
 <body class="bg-gray-50">

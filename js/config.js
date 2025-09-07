@@ -22,7 +22,7 @@ const CONFIG = {
     
     // Google Maps Configuration - Using Environment Variables
     GOOGLE_MAPS: {
-        API_KEY: getEnvVar('GOOGLE_MAPS_API_KEY', 'AIzaSyBqD4_uvapoL5DtaVI_6M57tneG131Rsvw'),
+        API_KEY: getEnvVar('GOOGLE_MAPS_API_KEY', ''),
         LIBRARIES: ['places', 'geometry', 'drawing'],
         MAP_ID: 'houston_disaster_map' // Optional: for custom styling
     },

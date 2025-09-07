@@ -3,9 +3,9 @@
 // API keys from .env file
 
 window.RUNTIME_ENV = {
-    GOOGLE_MAPS_API_KEY: 'AIzaSyBqD4_uvapoL5DtaVI_6M57tneG131Rsvw',
-    MISTRAL_API_KEY: '6EaGM4ijaFF2pu4CxMMH4iSPwle4Vcpk',
-    TAVILY_API_KEY: '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',
+    GOOGLE_MAPS_API_KEY: '',
+    MISTRAL_API_KEY: '',
+    TAVILY_API_KEY: '',
     OPENAI_API_KEY: '',
     APP_ENV: 'development',
     DEBUG_MODE: 'true'
