@@ -10,6 +10,27 @@ class IntelligentChatService {
         this.waitForEnvironment();
     }
 
+    async generateServerResponse(userMessage, context, searchResults) {
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userMessage, context, searchResults })
+            });
+            if (!response.ok) return null;
+            const data = await response.json();
+            if (!data?.message) return null;
+            // Update conversation history
+            this.conversationHistory.push(
+                { role: 'user', content: userMessage },
+                { role: 'assistant', content: data.message }
+            );
+            return data.message;
+        } catch (_) {
+            return null;
+        }
+    }
+
     async waitForEnvironment() {
         if (window.ENV && window.ENV.MISTRAL_API_KEY) {
             this.loadApiKeys();
@@ -79,14 +100,18 @@ class IntelligentChatService {
                 searchResults = await this.searchWithTavily(userMessage);
             }
 
-            // Generate AI response with Mistral
+            // Generate AI response via serverless API (so keys stay server-side)
+            const viaServer = await this.generateServerResponse(userMessage, context, searchResults);
+            if (viaServer) return viaServer;
+
+            // If serverless route fails, fall back to direct API if key exists
             if (this.mistralApiKey) {
-                console.log('🧠 Generating Mistral AI response...');
+                if (window.ENV?.DEBUG_MODE === 'true') console.log('🧠 Falling back to direct Mistral API call...');
                 return await this.generateMistralResponse(userMessage, context, searchResults);
-            } else {
-                console.log('⚠️ No Mistral API key, using fallback...');
-                return this.generateFallbackResponse(userMessage, searchResults);
             }
+
+            if (window.ENV?.DEBUG_MODE === 'true') console.log('⚠️ No AI path available, using fallback');
+            return this.generateFallbackResponse(userMessage, searchResults);
         } catch (error) {
             console.error('❌ Error generating response:', error);
             return this.getErrorResponse();

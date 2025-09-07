@@ -78,11 +78,11 @@ The Houston Disaster Response Assistant is a feature-rich emergency preparedness
 
 ## 🚀 Getting Started
 
-### Installation
+### Local (Development)
 
-1. **Open the application**: Navigate to `index.html` in a web browser
-2. **Install as PWA**: Click the install prompt or use browser's "Install App" option
-3. **Set up profile**: Complete the personalization questionnaire for tailored recommendations
+1. Windows: double-click `run.bat`
+2. Mac/Linux: `./run.sh`
+3. Open `http://localhost:8000`
 
 ### Quick Start Guide
 
@@ -100,6 +100,38 @@ The Houston Disaster Response Assistant is a feature-rich emergency preparedness
 3. **Enable Notifications**
    - Allow browser notifications for emergency alerts
    - Receive real-time updates about weather warnings and evacuation orders
+
+Note: In production, API keys are loaded securely from the server. Do not hardcode secrets in client files.
+
+## ☁️ Deploying to Vercel
+
+### 1) Import the repo
+- Go to Vercel and import your GitHub repository.
+
+### 2) Set Environment Variables (Project → Settings → Environment Variables)
+- `GOOGLE_MAPS_API_KEY` = your_key
+- `MISTRAL_API_KEY` = optional (for AI chat)
+- `TAVILY_API_KEY` = optional (for real-time search)
+
+### 3) Build & Output Settings
+- Framework Preset: “Other”
+- Output Directory: `/` (static site)
+- No custom build command needed
+
+### 4) Serverless API Routes
+- The app uses Vercel API routes:
+  - `/api/config` returns safe client config
+  - `/api/health` returns health status
+  - `/api/chat` proxies AI chat to Mistral (server-side key)
+
+### 5) Domain & HTTPS
+- Assign your custom domain in Vercel
+- HTTPS is automatic
+
+### 6) Post-deploy checks
+- Open your Vercel URL
+- Verify map loads and chat works
+- Check `/api/health` returns `{ status: 'ok' }`
 
 ## 📱 Key Features
 
